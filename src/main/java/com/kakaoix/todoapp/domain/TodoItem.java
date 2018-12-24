@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "todo_item")
@@ -23,7 +24,11 @@ public class TodoItem {
 
     @NonNull
     @Column(length = 1, columnDefinition = "int default 0")
-    private int isChecked;
+    private Integer isChecked;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "referenceItem")
+    private List<TodoItem> referenceItems;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
