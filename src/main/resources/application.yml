@@ -4,18 +4,18 @@ spring:
   thymeleaf:
     enabled: true
     encoding: UTF-8
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost:9092/mem:testdb;MVCC=TRUE
-    #url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    initialization-mode: always
   h2:
     console:
       enabled: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    #url: jdbc:h2:tcp://localhost:9092/mem:testdb;MVCC=TRUE
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    initialization-mode: always
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: H2
     show-sql: true
     hibernate:
       ddl-auto: create-drop

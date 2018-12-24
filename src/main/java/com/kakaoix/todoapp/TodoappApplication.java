@@ -7,6 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.List;
+
 @SpringBootApplication
 public class TodoappApplication implements CommandLineRunner {
 
@@ -15,7 +17,9 @@ public class TodoappApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		todoItemRepository.save(new TodoItem("자바스터디", 1));
+		//todoItemRepository.save(new TodoItem("자바스터디", 1));
+		List<TodoItem> list = todoItemRepository.findAll();
+		System.out.println(list.size());
 	}
 
 	public static void main(String[] args) {

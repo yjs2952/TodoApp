@@ -1,9 +1,6 @@
 package com.kakaoix.todoapp.domain;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,6 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@NoArgsConstructor
 public class TodoItem {
 
     @Id

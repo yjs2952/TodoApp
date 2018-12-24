@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Profile;
 
 import java.sql.SQLException;
 
-@Configuration
-@Profile("local")
+//@Configuration
+//@Profile("local")
 public class H2ServerConfiguration {
 
     @Bean
