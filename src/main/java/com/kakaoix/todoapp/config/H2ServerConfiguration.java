@@ -7,12 +7,12 @@ import org.springframework.context.annotation.Profile;
 
 import java.sql.SQLException;
 
-//@Configuration
-//@Profile("local")
+@Configuration
+@Profile("local")
 public class H2ServerConfiguration {
 
-    /*@Bean
+    @Bean
     public Server h2TcpServer() throws SQLException {
         return Server.createTcpServer().start();
-    }*/
+    }
 }
