@@ -31,5 +31,6 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	compile('com.h2database:h2')
 	compileOnly('org.projectlombok:lombok')
+	runtimeOnly('org.springframework.boot:spring-boot-devtools')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
