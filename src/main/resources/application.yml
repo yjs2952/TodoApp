@@ -35,8 +35,8 @@ spring:
   devtools:
     livereload:
       enabled: true
-logging:
-  level:
-    org:
-      hibernate:
-        type: trace
+#logging:
+ # level:
+  #  org:
+   #   hibernate:
+    #    type: trace
