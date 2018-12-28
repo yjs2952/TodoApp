@@ -29,18 +29,16 @@
                 </div>
             </div>
         </form>
-        <div class="content">
+        <div class="todo-content">
             <div class="alert alert-success d-flex flex-row align-items-center">
                 <div class="mr-5">
                     <input type="checkbox" th:value="aa" th:checked="true"><!--th:onchange="aa"-->
                 </div>
-                <div th:class="todo-text"> <!--{`todo-text ${item.checked && 'checked'}`}-->
+                <div class="todo-text" th:classappend="checked"> <!--{`todo-text ${item.checked && 'checked'}`}-->
                     <!--{item.text}-->TODO
                 </div>
                 <div class="mx-5">
-                    <div>
-                        작성일 :
-                    </div>
+                    <div>작성일 : <span th:text="오늘"></span></div>
                     <div>
                         수정일 : <!--{item.modDate && `수정일 : ${item.modDate}`}-->
                     </div>
