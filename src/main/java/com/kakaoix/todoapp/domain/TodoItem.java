@@ -3,37 +3,40 @@ package com.kakaoix.todoapp.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "todo_item")
-@Getter
-@Setter
-@RequiredArgsConstructor
+@Entity @Table(name = "todo_item")
+@Getter @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class TodoItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
     @Column(nullable = false)
     private String content;
 
-    @NonNull
     @Column(length = 1, columnDefinition = "int default 0")
     private Integer isChecked;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "referenceItem")
+    @ManyToMany
+    @JoinTable(name = "todo_reference",
+                joinColumns = @JoinColumn(name = "id"),
+                inverseJoinColumns = @JoinColumn(name = "todo_id"))
     private List<TodoItem> referenceItems;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date regDate;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 4, nullable = false)
+    private Status status;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modDate;
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime regDate;
+
+    @Column
+    private LocalDateTime modDate;
 }

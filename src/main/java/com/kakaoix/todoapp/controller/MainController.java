@@ -1,21 +1,18 @@
 package com.kakaoix.todoapp.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+@Slf4j
 @Controller
 public class MainController {
 
-    @GetMapping("/")
+    @GetMapping("")
     public String todoList(){
+        log.info("<<<<<Start MainController>>>>>");
         return "todoList";
-    }
-
-    @GetMapping("/{name}.html")
-    public String page(@PathVariable String name, Model model) {
-        model.addAttribute("pageName", name);
-        return "page";
     }
 }
