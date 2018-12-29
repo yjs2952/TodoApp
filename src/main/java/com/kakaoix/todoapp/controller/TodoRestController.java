@@ -12,10 +12,12 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController("/api/todos")
+@RequestMapping("(/api/todos")
+@RestController
 public class TodoRestController {
 
     private TodoService todoService;
@@ -27,10 +29,10 @@ public class TodoRestController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable){
         Page<TodoItem> todoItems = todoService.getTodoList(pageable);
-        /*PageMetadata pageMetadata =
+        PageMetadata pageMetadata =
                 new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
         PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
-        resources.add(ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*/
-        return ResponseEntity.ok(todoItems);
+        //resources.add(ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());
+        return ResponseEntity.ok(resources);
     }
 }
