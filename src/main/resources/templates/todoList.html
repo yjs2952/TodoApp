@@ -13,6 +13,10 @@
     <script th:src="@{js/jQuery/jQuery3.3.1.js}"></script>
     <script th:src="@{js/bootstrap/bootstrap.min.js}"></script>
     <script th:src="@{js/todoList.js}"></script>
+
+    <script>
+
+    </script>
 </head>
 <body>
 <!--<div th:replace="layout/header::header"></div>-->
@@ -21,7 +25,7 @@
     <div class="form-content">
         <form>
             <div class="input-group mb-3">
-                <input id="todo_idx" type="text" class="form-control" placeholder="Todo item" th:value="aa">
+                <input id="todo_idx" type="text" class="form-control" placeholder="Todo item">
                 <div class="input-group-append">
                     <button type="button" class="btn btn-primary">
                         Add Todo
@@ -30,18 +34,21 @@
             </div>
         </form>
         <div class="todo-content">
-            <div class="alert alert-success d-flex flex-row align-items-center">
+            <div th:each="todo : ${todoList}" class="alert alert-success d-flex flex-row align-items-center">
                 <div class="mr-5">
-                    <input type="checkbox" th:value="aa" th:checked="true"><!--th:onchange="aa"-->
+                    <input type="checkbox" th:value="${todo.isChecked}"
+                           th:checked="${todo.isChecked == 1 ? true : false}"><!--th:onchange="aa"-->
                 </div>
-                <div class="todo-text" th:classappend="checked"> <!--{`todo-text ${item.checked && 'checked'}`}-->
-                    <!--{item.text}-->TODO
+                <div class="todo-text" th:classappend="${todo.isChecked == 1 ? 'checked' : ''}"
+                     th:text="${todo?.content}">
                 </div>
                 <div class="mx-5">
-                    <div>작성일 : <span th:text="오늘"></span></div>
-                    <div>
-                        수정일 : <!--{item.modDate && `수정일 : ${item.modDate}`}-->
-                    </div>
+                    <!--<div>작성일 : <span th:value="${todo?.regDate} ? ${#temporals.format(todo.regDate, 'yyyy-MM-dd')} : ${todo?.regDate}"></span></div>-->
+                    <!--<div th:if="${todo?.modDate}" th:text="'수정일 : '" th:value="${todo?.modDate} ? ${#temporals.format(todo.modDate, 'yyyy-MM-dd')} : ${todo?.modDate}"></div>-->
+                    <div th:text="'작성일 : ' + ${#temporals.format(todo.regDate, 'yyyy-MM-dd')}"></div>
+                    <div th:text="'수정일 : ' + ${#temporals.format(todo.regDate, 'yyyy-MM-dd')}"
+                         th:if="${todo?.modDate}"></div>
+
                 </div>
                 <button type="button" class="close"> <!--th:onClick=""--> <!-- {() => deleteItem(item.id)}-->
                     <span aria-hidden="true">&times;</span>
@@ -50,23 +57,26 @@
         </div>
     </div>
     <!-- Pagination -->
-    <!--<nav aria-label="Page navigation" style="text-align:center;">
-        <ul class="pagination" th:with="startNumber=${T(Math).floor(boardList.number/10)}*10+1, endNumber=(${boardList.totalPages} > ${startNumber}+9) ? ${startNumber}+9 : ${boardList.totalPages}">
-            <li><a aria-label="Previous" href="/board/list?page=1">&laquo;</a></li>
-            <li th:style="${boardList.first} ? 'display:none'">
-                <a th:href="@{/board/list(page=${boardList.number})}">&lsaquo;</a>
+    <nav aria-label="Page navigation" style="text-align:center;">
+        <ul class="pagination pagination-sm justify-content-center"
+            th:with="startNumber=${T(Math).floor(todoList.number/10)}*10+1, endNumber=(${todoList.totalPages} > ${startNumber} + 9) ? ${startNumber} + 9 : ${todoList.totalPages}">
+            <li class="page-item"><a class="page-link" aria-label="Previous" href="?page=1">&laquo;</a></li>
+            <li class="page-item" th:style="${todoList.first} ? 'display:none'">
+                <a class="page-link" th:href="@{/(page=${todoList.number})}">&lsaquo;</a>
             </li>
 
-            <li th:each="page :${#numbers.sequence(startNumber, endNumber)}" th:class="(${page} == ${boardList.number}+1) ? 'active'">
-                <a th:href="@{/board/list(page=${page})}" th:text="${page}"><span class="sr-only"></span></a>
+            <li th:each="page :${#numbers.sequence(startNumber, endNumber)}" th:class="page-item"
+                th:classappend="(${page} == ${todoList.number}+1) ? 'active'">
+                <a class="page-link" th:href="@{/(page=${page})}" th:text="${page}"><span class="sr-only"></span></a>
             </li>
 
-            <li th:style="${boardList.last} ? 'display:none'">
-                <a th:href="@{/board/list(page=${boardList.number}+2)}">&rsaquo;</a>
+            <li class="page-item" th:style="${todoList.last} ? 'display:none'">
+                <a class="page-link" th:href="@{/(page=${todoList.number}+2)}">&rsaquo;</a>
             </li>
-            <li><a aria-label="Next" th:href="@{/board/list(page=${boardList.totalPages})}">&raquo;</a></li>
+            <li class="page-item"><a class="page-link" aria-label="Next" th:href="@{/(page=${todoList.totalPages})}">&raquo;</a>
+            </li>
         </ul>
-    </nav>-->
+    </nav>
     <!-- /Pagination -->
 </div>
 <!--<div th:replace="layout/footer::footer"></div>-->
