@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity @Table(name = "todo_item")
-@Getter @Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +34,7 @@ public class TodoItem {
     @Column(length = 4, nullable = false)
     private Status status;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column
     private LocalDateTime regDate;
 
     @Column

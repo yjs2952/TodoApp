@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TodoItemRepositoryTest {
                 .content("테스트")
                 .isChecked(1)
                 .status(Status.TODO)
+                .regDate(LocalDateTime.now())
                 .build());
     }
 
@@ -36,24 +38,12 @@ public class TodoItemRepositoryTest {
     public void Todo_생성_테스트(){
         List<TodoItem> todoItems = todoItemRepository.findAll();
         for (TodoItem todoItem : todoItems) {
-            log.info(todoItem.getContent());
+            log.info(todoItem.getRegDate().toString());
         }
     }
 
     @Test
-    public void todoItem_참조추가() {
-        TodoItem todoItem = todoItemRepository.getOne(1L);
-        List<TodoItem> todoItems = new ArrayList<>();
-        todoItems.add(todoItemRepository.getOne(2L));
-        todoItems.add(todoItemRepository.getOne(3L));
-        todoItem.setReferenceItems(todoItems);
-        todoItemRepository.saveAndFlush(todoItem);
-        //Assert.assertEquals(todoItemRepository.getOne(1L).getReferenceItems().size(), todoItem.getReferenceItems().size());
-    }
-
-    @Test
     public void  todoItem_참조추가_builder패턴(){
-
         List<TodoItem> todoItems = new ArrayList<>();
         todoItems.add(todoItemRepository.getOne(2L));
         todoItems.add(todoItemRepository.getOne(3L));
