@@ -10,6 +10,10 @@
     <!-- bootstrap 4 -->
     <link rel="stylesheet" th:href="@{css/bootstrap/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{css/todoList.css}">
+
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
     <script th:src="@{js/jQuery/jQuery3.3.1.js}"></script>
     <script th:src="@{js/bootstrap/bootstrap.min.js}"></script>
     <script th:src="@{js/todoList.js}"></script>
@@ -17,7 +21,6 @@
 
 </head>
 <body>
-<!--<div th:replace="layout/header::header"></div>-->
 <div class="container my-5">
     <h1>To do List</h1>
     <div class="form-content">
@@ -32,9 +35,10 @@
             </div>
         </form>
         <div class="todo-content">
-            <div th:each="todo : ${todoList}" class="alert alert-success d-flex flex-row align-items-center">
+            <div th:data-tno="${todo.id}" th:each="todo : ${todoList}"
+                 class="alert alert-success d-flex flex-row align-items-center">
                 <div class="custom-control custom-checkbox mr-5">
-                    <input type="checkbox" class="custom-control-input" th:value="${todo.isChecked}"
+                    <input type="checkbox" class="todoCheck custom-control-input"
                            th:id="check + (${todo.id})"
                            th:checked="${todo.isChecked == 1 ? true : false}"><!--th:onchange="aa"-->
                     <label class="custom-control-label" th:for="check + (${todo.id})"></label>
@@ -46,13 +50,20 @@
                     <!--<div>작성일 : <span th:value="${todo?.regDate} ? ${#temporals.format(todo.regDate, 'yyyy-MM-dd')} : ${todo?.regDate}"></span></div>-->
                     <!--<div th:if="${todo?.modDate}" th:text="'수정일 : '" th:value="${todo?.modDate} ? ${#temporals.format(todo.modDate, 'yyyy-MM-dd')} : ${todo?.modDate}"></div>-->
                     <div th:text="'작성일 : ' + ${#temporals.format(todo.regDate, 'yyyy-MM-dd')}"></div>
-                    <div th:text="'수정일 : ' + ${#temporals.format(todo.regDate, 'yyyy-MM-dd')}"
+                    <div th:text="'수정일 : ' + ${#temporals.format(todo.modDate, 'yyyy-MM-dd')}"
                          th:if="${todo?.modDate}"></div>
 
                 </div>
-                <button type="button" class="close"> <!--th:onClick=""--> <!-- {() => deleteItem(item.id)}-->
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                 <!--th:onClick=""-->
+                    <!-- {() => deleteItem(item.id)}-->
+                <button class="ref close fas fa-tags fa-1x"></button>
+                <button class="modify close far fa-edit fa-1x mx-2"></button>
+                <button class="delete close far fa-trash-alt fa-1x"></button>
+                    <!-- Todo : close 관련 css 따로 빼야됨 -->
+                    <!--<button type="button" class="delete btn btn-xdanger btn-sm">
+                        <i class="far fa-trash-alt fa-xs"></i>
+                    </button>-->
+                    <!--<span aria-hidden="true">&times;</span>-->
             </div>
         </div>
     </div>
@@ -88,8 +99,38 @@
 </div>
 <!--<div th:replace="layout/footer::footer"></div>-->
 
+<!-- modal -->
+<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">To do</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Content:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Send message</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    $('#addTodo').click(function () {
+    $('#addTodo').on("click", function () {
         var jsonData = JSON.stringify({
             content: $('#content').val()
         });
@@ -108,6 +149,54 @@
                 alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
             }
         });
+    });
+
+    $('.modify').on("click", function () {
+        var id = $(this).parents("div[data-tno]").attr('data-tno');
+        console.log(id);
+
+        $('#modifyModal').modal('show');
+    });
+
+    $('.todoCheck').on("change", function () {
+        var id = $(this).parents("div[data-tno]").attr('data-tno');
+        var isChecked = $(this).prop('checked') === true ? 1 : 0;
+        var jsonData = JSON.stringify({
+            isChecked : isChecked,
+            modifyType : 1
+            // Todo : modifyType (1 : 체크박스만, 0 : 전체 수정)
+        });
+
+        $.ajax({
+            url: "/api/todos/" + id,
+            data: jsonData,
+            type: "PUT",
+            contentType: "application/json",
+            dataType: "text",
+            success: function (data) {
+                alert(data);
+                location.href = '/';
+            },
+            error: function (request, status, error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+        })
+    });
+
+    $('.delete').on("click", function () {
+        var id = $(this).parent().attr('data-tno');
+
+        $.ajax({
+            url: "/api/todos/" + id,
+            type: "DELETE",
+            success: function (data) {
+                alert(data);
+                location.href = '/';
+            },
+            error: function (request, status, error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+        })
     });
 </script>
 </body>

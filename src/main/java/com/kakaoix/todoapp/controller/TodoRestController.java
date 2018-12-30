@@ -52,4 +52,34 @@ public class TodoRestController {
 
         return entity;
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modifyTodoItem(@PathVariable("id") Long id, @RequestBody TodoItemDto todoItemDto) {
+
+        log.info(todoItemDto.toString());
+
+        ResponseEntity<?> entity = null;
+        try {
+            todoService.modifyTodoItem(id, todoItemDto);
+            entity = new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return entity;
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBoard(@PathVariable("id") Long id) {
+        ResponseEntity<?> entity = null;
+        try {
+            todoService.deleteTodoItem(id);
+            entity = new ResponseEntity<>("SUCESS", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return entity;
+    }
 }

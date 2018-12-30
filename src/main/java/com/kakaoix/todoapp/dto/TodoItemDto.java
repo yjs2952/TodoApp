@@ -16,4 +16,5 @@ public class TodoItemDto {
     private String content;
     private int isChecked;
     private List<Long> referenceIds;
+    private int modifyType;
 }

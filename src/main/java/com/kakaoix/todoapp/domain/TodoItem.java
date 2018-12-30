@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity @Table(name = "todo_item")
-@Getter
+@Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
