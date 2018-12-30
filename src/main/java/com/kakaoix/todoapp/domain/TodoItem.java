@@ -24,7 +24,7 @@ public class TodoItem {
     @Column(length = 1, columnDefinition = "int default 0")
     private Integer isChecked;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "todo_reference",
                 joinColumns = @JoinColumn(name = "id"),
                 inverseJoinColumns = @JoinColumn(name = "todo_id"))

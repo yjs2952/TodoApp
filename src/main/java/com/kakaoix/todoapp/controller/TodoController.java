@@ -16,7 +16,7 @@ public class TodoController {
         this.todoService = todoService;
     }
 
-    @GetMapping({"", "/"})
+    @GetMapping("/")
     public String home(@PageableDefault Pageable pageable, Model model) {
         model.addAttribute("todoList", todoService.getTodoList(pageable));
         return "todoList";

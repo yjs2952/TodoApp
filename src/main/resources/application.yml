@@ -40,3 +40,8 @@ spring:
   #  org:
    #   hibernate:
     #    type: trace
+  data:
+    rest:
+      base-path: /api
+      default-page-size: 5
+      max-page-size: 5

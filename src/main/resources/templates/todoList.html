@@ -14,9 +14,7 @@
     <script th:src="@{js/bootstrap/bootstrap.min.js}"></script>
     <script th:src="@{js/todoList.js}"></script>
 
-    <script>
 
-    </script>
 </head>
 <body>
 <!--<div th:replace="layout/header::header"></div>-->
@@ -25,9 +23,9 @@
     <div class="form-content">
         <form>
             <div class="input-group mb-3">
-                <input id="todo_idx" type="text" class="form-control" placeholder="Todo item">
+                <input type="text" id="content" class="form-control" placeholder="Todo item">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" id="addTodo" class="btn btn-primary">
                         Add Todo
                     </button>
                 </div>
@@ -36,7 +34,8 @@
         <div class="todo-content">
             <div th:each="todo : ${todoList}" class="alert alert-success d-flex flex-row align-items-center">
                 <div class="custom-control custom-checkbox mr-5">
-                    <input type="checkbox" class="custom-control-input" th:value="${todo.isChecked}" th:id="check + (${todo.id})"
+                    <input type="checkbox" class="custom-control-input" th:value="${todo.isChecked}"
+                           th:id="check + (${todo.id})"
                            th:checked="${todo.isChecked == 1 ? true : false}"><!--th:onchange="aa"-->
                     <label class="custom-control-label" th:for="check + (${todo.id})"></label>
                 </div>
@@ -88,5 +87,28 @@
     <!-- /Pagination -->
 </div>
 <!--<div th:replace="layout/footer::footer"></div>-->
+
+<script>
+    $('#addTodo').click(function () {
+        var jsonData = JSON.stringify({
+            content: $('#content').val()
+        });
+
+        $.ajax({
+            url: "/api/todos",
+            type: "POST",
+            data: jsonData,
+            contentType: "application/json",
+            dataType: "text",  // Todo : 이 부분을 json 으로 바꾸면 에러가 난다. 이유가 뭐지?
+            success: function (data) {
+                alert(data);
+                location.href = '/';
+            },
+            error: function (request, status, error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+        });
+    });
+</script>
 </body>
 </html>
