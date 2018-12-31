@@ -2,30 +2,26 @@ package com.kakaoix.todoapp.controller;
 
 import com.kakaoix.todoapp.domain.TodoItem;
 import com.kakaoix.todoapp.dto.TodoItemDto;
-import com.kakaoix.todoapp.service.TodoService;
+import com.kakaoix.todoapp.service.TodoItemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Slf4j
 @RequestMapping("/api/todos")
 @RestController
 public class TodoRestController {
 
-    private TodoService todoService;
+    private TodoItemService todoService;
 
-    public TodoRestController(TodoService todoService) {
+    public TodoRestController(TodoItemService todoService) {
         this.todoService = todoService;
     }
 
@@ -37,6 +33,12 @@ public class TodoRestController {
         PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
         resources.add(linkTo(methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*/
         return ResponseEntity.ok(todoItems);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<?> getTodoItem(@PathVariable("id") Long id) {
+        log.info("modifyId {}: ", id);
+        return ResponseEntity.ok(todoService.getModifyTodoItem(id));
     }
 
     @PostMapping

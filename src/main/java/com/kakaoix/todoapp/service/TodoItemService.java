@@ -2,10 +2,12 @@ package com.kakaoix.todoapp.service;
 
 import com.kakaoix.todoapp.domain.Status;
 import com.kakaoix.todoapp.domain.TodoItem;
+import com.kakaoix.todoapp.domain.TodoReference;
 import com.kakaoix.todoapp.dto.TodoItemDto;
 import com.kakaoix.todoapp.repository.TodoItemReferenceRepository;
 import com.kakaoix.todoapp.repository.TodoItemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class TodoService {
+public class TodoItemService {
 
     private final TodoItemRepository todoItemRepository;
     private final TodoItemReferenceRepository todoItemReferenceRepository;
@@ -29,10 +36,35 @@ public class TodoService {
         return todoItemRepository.findAll(pageable);
     }
 
-    /*@Transactional(readOnly = true)
-    public TodoItem findById(Long id) {
-        return todoItemRepository.findById(id).orElse(new TodoItem());
-    }*/
+    @Transactional(readOnly = true)
+    public TodoItemDto getModifyTodoItem(Long id){
+        TodoItem todoItem = todoItemRepository.getOne(id);
+
+        // TodoDto 에 값 세팅
+        TodoItemDto todoItemDto = TodoItemDto.builder()
+                .id(id)
+                .content(todoItem.getContent())
+                .isChecked(todoItem.getIsChecked())
+                .status(todoItem.getStatus())
+                .regDate(todoItem.getRegDate())
+                .modDate(todoItem.getModDate())
+                .build();
+
+        // 참조 todo 목록 불러오기
+        List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
+
+        if (prevTodoItems.size() > 0) {
+            List<Long> prevItemIds = new ArrayList<>();
+            for (TodoReference todo : prevTodoItems) {
+                prevItemIds.add(todo.getPrevTodoItem().getId());
+            }
+            todoItemDto.setReferenceIds(prevItemIds);
+        }
+
+        log.info("todo content : {}", todoItem.getContent());
+
+        return todoItemDto;
+    }
 
     @Transactional
     public Long addTodoItem(TodoItemDto todoItemDto) {
@@ -41,7 +73,6 @@ public class TodoService {
                 .status(Status.TODO)
                 .regDate(LocalDateTime.now())
                 .build());
-
         return todoItem.getId();
     }
 

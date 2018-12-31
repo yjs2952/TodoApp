@@ -12,7 +12,8 @@
     <link rel="stylesheet" th:href="@{css/todoList.css}">
 
     <!-- fontawesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
     <script th:src="@{js/jQuery/jQuery3.3.1.js}"></script>
     <script th:src="@{js/bootstrap/bootstrap.min.js}"></script>
@@ -53,16 +54,16 @@
                          th:if="${todo?.modDate}"></div>
 
                 </div>
-                 <!--th:onClick=""-->
-                    <!-- {() => deleteItem(item.id)}-->
-                <button class="ref close fas fa-tags fa-1x"></button>
-                <button class="modify close far fa-edit fa-1x mx-2"></button>
+                <!--th:onClick=""-->
+                <!-- {() => deleteItem(item.id)}-->
+                <!--<button class="ref close fas fa-tags fa-1x"></button>-->
+                <button class="modifyModal close far fa-edit fa-1x mx-2"></button>
                 <button class="delete close far fa-trash-alt fa-1x"></button>
-                    <!-- Todo : close 관련 css 따로 빼야됨 -->
-                    <!--<button type="button" class="delete btn btn-xdanger btn-sm">
-                        <i class="far fa-trash-alt fa-xs"></i>
-                    </button>-->
-                    <!--<span aria-hidden="true">&times;</span>-->
+                <!-- Todo : close 관련 css 따로 빼야됨 -->
+                <!--<button type="button" class="delete btn btn-xdanger btn-sm">
+                    <i class="far fa-trash-alt fa-xs"></i>
+                </button>-->
+                <!--<span aria-hidden="true">&times;</span>-->
             </div>
         </div>
     </div>
@@ -99,7 +100,8 @@
 <!--<div th:replace="layout/footer::footer"></div>-->
 
 <!-- modal -->
-<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -111,12 +113,81 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="recipient-name" class="col-form-label">Content:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="modifyContent" class="col-form-label">Todo Item</label>
+                        <textarea class="form-control" id="modifyContent"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="col-form-label">Message:</label>
-                        <textarea class="form-control" id="message-text"></textarea>
+                        <label for="searchTodoItem" class="col-form-label">참조 Todo 조회</label>
+                        <input type="text" class="form-control" id="searchTodoItem">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchTodoItem" class="col-form-label">조회 결과</label>
+                        <div class="well" style="max-height: 200px;overflow: auto;">
+                            <ul id="searchList" class="list-group checked-list-box">
+                                <li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>참조 Todo 목록</label>
+                        <div class="well" style="max-height: 300px;overflow-y: auto;">
+                            <div id="check-list-box" class="checked-list-box">
+                                <!--<li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">&lt;!&ndash;th:onchange="aa"&ndash;&gt;
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId"></label>
+                                    </div>
+                                </li>-->
+                            </div>
+                        </div>
+                        <!--<select multiple class="form-control" id="selectTodoItems">
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>-->
                     </div>
                 </form>
             </div>
@@ -137,7 +208,7 @@
             $('#content').focus();
             return;
         }
-        
+
         const jsonData = JSON.stringify({
             content: content
         });
@@ -158,19 +229,49 @@
         });
     });
 
-    $('.modify').on("click", function () {
+    $('.modifyModal').on("click", function () {
         const id = $(this).parents("div[data-tno]").attr('data-tno');
-        console.log(id);
 
-        $('#modifyModal').modal('show');
+        $.ajax({
+            url: "/api/todos/" + id,
+            type: "GET",
+            success: function (data) {
+                const jsonData = JSON.stringify(data);
+                console.log(jsonData);
+                $('#modifyContent').val(data.content);
+
+                if (data.referenceIds != null && data.referenceIds.length > 0) {
+
+                    let checkListBox = $('#check-list-box');
+                    checkListBox.html('');
+
+                    for (let i = 0; i < data.referenceIds.length; i++) {
+                        checkListBox.append(
+                            `<div class="custom-control custom-control-inline custom-checkbox ">
+                                <input type="checkbox" class="custom-control-input"
+                                    id="checkRefId${data.referenceIds[i]}">
+                                <label style="width: 100%" class="custom-control-label"
+                                    for="checkRefId${data.referenceIds[i]}" id="refId">${data.referenceIds[i]}</label>
+                            </div>`
+                        );
+                    }
+                }
+            },
+            error: function (request, status, error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+        });
+
+        let modifyForm = $('#modifyModal');
+        modifyForm.modal('show');
     });
 
     $('.todoCheck').on("change", function () {
         const id = $(this).parents("div[data-tno]").attr('data-tno');
         const isChecked = $(this).prop('checked') === true ? 1 : 0;
         const jsonData = JSON.stringify({
-            isChecked : isChecked,
-            modifyType : 1
+            isChecked: isChecked,
+            modifyType: 1
             // Todo : modifyType (1 : 체크박스만, 0 : 전체 수정)
         });
 

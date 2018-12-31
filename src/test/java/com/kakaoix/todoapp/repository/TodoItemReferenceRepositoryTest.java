@@ -21,7 +21,11 @@ public class TodoItemReferenceRepositoryTest {
 
     @Test
     public void 참조하는_todoItem_있는지_조회() {
-        //List<TodoReference> list = repository.getListByCurrentId(4L);
+        List<TodoReference> list = repository.getListByCurrentId(4L);
+        for (TodoReference tr : list) {
+            log.info("currnet id : {}", tr.getCurrentTodoItem().getId());
+        }
+
         //Assert.assertEquals(4, list.size());
         Assert.assertTrue(repository.existsTodoReferencesByCurrentTodoItemId(4L));
     }
@@ -31,6 +35,5 @@ public class TodoItemReferenceRepositoryTest {
 //        int result = repository.deletePrevTodoItemsByCurrentId(7L);
 //        log.info("result : {}", result);
         Assert.assertTrue(repository.existsTodoReferencesByPrevTodoItemId(1L));
-
     }
 }
