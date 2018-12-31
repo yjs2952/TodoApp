@@ -108,3 +108,8 @@ INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('JPA 스�
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('JPA 스터디', 0, 'REF', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('JPA 스터디', 0, 'TODO', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('JPA 스터디', 0, 'TODO', now());
+
+INSERT INTO todo_reference (prev_todo_id, current_todo_id) VALUES (1, 4);
+INSERT INTO todo_reference (prev_todo_id, current_todo_id) VALUES (2, 4);
+INSERT INTO todo_reference (prev_todo_id, current_todo_id) VALUES (3, 4);
+INSERT INTO todo_reference (prev_todo_id, current_todo_id) VALUES (5, 4);

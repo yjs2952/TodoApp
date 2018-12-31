@@ -18,7 +18,6 @@
     <script th:src="@{js/bootstrap/bootstrap.min.js}"></script>
     <script th:src="@{js/todoList.js}"></script>
 
-
 </head>
 <body>
 <div class="container my-5">
@@ -131,8 +130,16 @@
 
 <script>
     $('#addTodo').on("click", function () {
-        var jsonData = JSON.stringify({
-            content: $('#content').val()
+        const content = $('#content').val();
+
+        if (content === null || content === '') {
+            alert('Todo item을 입력해 주세요.');
+            $('#content').focus();
+            return;
+        }
+        
+        const jsonData = JSON.stringify({
+            content: content
         });
 
         $.ajax({
@@ -152,16 +159,16 @@
     });
 
     $('.modify').on("click", function () {
-        var id = $(this).parents("div[data-tno]").attr('data-tno');
+        const id = $(this).parents("div[data-tno]").attr('data-tno');
         console.log(id);
 
         $('#modifyModal').modal('show');
     });
 
     $('.todoCheck').on("change", function () {
-        var id = $(this).parents("div[data-tno]").attr('data-tno');
-        var isChecked = $(this).prop('checked') === true ? 1 : 0;
-        var jsonData = JSON.stringify({
+        const id = $(this).parents("div[data-tno]").attr('data-tno');
+        const isChecked = $(this).prop('checked') === true ? 1 : 0;
+        const jsonData = JSON.stringify({
             isChecked : isChecked,
             modifyType : 1
             // Todo : modifyType (1 : 체크박스만, 0 : 전체 수정)
@@ -179,12 +186,13 @@
             },
             error: function (request, status, error) {
                 alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                $(`input:checkbox[id="check${id}"]`).prop('checked', false);
             }
         })
     });
 
     $('.delete').on("click", function () {
-        var id = $(this).parent().attr('data-tno');
+        const id = $(this).parent().attr('data-tno');
 
         $.ajax({
             url: "/api/todos/" + id,

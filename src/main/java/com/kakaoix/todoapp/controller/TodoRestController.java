@@ -29,7 +29,7 @@ public class TodoRestController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable){
+    public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable) {
         Page<TodoItem> todoItems = todoService.getTodoList(pageable);
         PageMetadata pageMetadata =
                 new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
@@ -60,8 +60,15 @@ public class TodoRestController {
 
         ResponseEntity<?> entity = null;
         try {
-            todoService.modifyTodoItem(id, todoItemDto);
-            entity = new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+            String message = null;
+
+            if (todoItemDto.getModifyType() == 1) {
+                message = todoService.checkTodoItem(id, todoItemDto);
+            } else {
+                message = todoService.modifyTodoItem(id, todoItemDto);
+            }
+
+            entity = new ResponseEntity<>(message, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -75,7 +82,7 @@ public class TodoRestController {
         ResponseEntity<?> entity = null;
         try {
             todoService.deleteTodoItem(id);
-            entity = new ResponseEntity<>("SUCESS", HttpStatus.OK);
+            entity = new ResponseEntity<>("삭제 되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

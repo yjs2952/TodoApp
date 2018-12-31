@@ -24,11 +24,11 @@ public class TodoItem {
     @Column(length = 1, columnDefinition = "int default 0")
     private Integer isChecked;
 
-    @ManyToMany
+    /*@ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "todo_reference",
                 joinColumns = @JoinColumn(name = "id"),
                 inverseJoinColumns = @JoinColumn(name = "todo_id"))
-    private List<TodoItem> referenceItems;
+    private List<TodoItem> referenceItems;*/
 
     @Enumerated(EnumType.STRING)
     @Column(length = 4, nullable = false)
