@@ -1,12 +1,12 @@
 spring:
   profiles:
     active: local
- # mvc:
+  # mvc:
   #  static-path-pattern: /resources/**
   thymeleaf:
     cache: false
-  #  enabled: true
-   # encoding: UTF-8
+    #  enabled: true
+    # encoding: UTF-8
   datasource:
     driver-class-name: org.h2.Driver
     #url: jdbc:h2:tcp://localhost:9092/mem:testdb;MVCC=TRUE
@@ -32,6 +32,11 @@ spring:
   #server:
   # tomcat:
   #  uri-encoding: UTF-8
+  data:
+    rest:
+      base-path: /api
+      default-page-size: 10
+      max-page-size: 10
   devtools:
     livereload:
       enabled: true
@@ -40,8 +45,5 @@ logging:
     org:
       hibernate:
         type: trace
-  data:
-    rest:
-      base-path: /api
-      default-page-size: 10
-      max-page-size: 10
+
+
