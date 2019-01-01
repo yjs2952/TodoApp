@@ -39,18 +39,6 @@ public class TodoRestController {
         return ResponseEntity.ok(todoService.getTodoList(pageable));
     }
 
-    /*@GetMapping("/{keyword}")
-    public ResponseEntity<?> getSearchTodoList(@PathVariable("keyword") String keyword) {
-        log.info("keyword : {}",keyword);
-
-        List<TodoItem> todoItems = todoService.getSearchTodoList(keyword);
-        *//*PageMetadata pageMetadata =
-                new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
-        PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
-        resources.add(linkTo(methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*//*
-        return ResponseEntity.ok(todoItems);
-    }*/
-
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> getTodoItem(@PathVariable("id") Long id) {
         log.info("modifyId {}: ", id);
@@ -82,7 +70,7 @@ public class TodoRestController {
             if (todoItemDto.getModifyType() == 1) {
                 message = todoService.checkTodoItem(id, todoItemDto);
             } else {
-                message = todoService.modifyTodoItem(id, todoItemDto);
+                todoService.modifyTodoItem(id, todoItemDto);
             }
 
             entity = new ResponseEntity<>(message, HttpStatus.OK);

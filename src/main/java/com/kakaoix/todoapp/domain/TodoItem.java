@@ -1,5 +1,6 @@
 package com.kakaoix.todoapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -7,13 +8,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity @Table(name = "todo_item")
 @Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TodoItem {
 
     @Id
@@ -29,12 +31,6 @@ public class TodoItem {
     @Column(length = 1, columnDefinition = "int default 0")
     private Integer isChecked;
 
-    /*@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "todo_reference",
-                joinColumns = @JoinColumn(name = "id"),
-                inverseJoinColumns = @JoinColumn(name = "todo_id"))
-    private List<TodoItem> referenceItems;*/
-
     @Enumerated(EnumType.STRING)
     @Column(length = 4, nullable = false)
     private Status status;
@@ -44,4 +40,7 @@ public class TodoItem {
 
     @Column
     private LocalDateTime modDate;
+
+    @Transient
+    private List<Long> prevTodoIds;
 }

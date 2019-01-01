@@ -33,7 +33,20 @@ public class TodoItemService {
     public Page<TodoItem> getTodoList(Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber() <= 0 ?
                 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), Sort.Direction.DESC, "id");
-        return todoItemRepository.findAll(pageable);
+        Page<TodoItem> todoList = todoItemRepository.findAll(pageable);
+
+        for (TodoItem todoItem : todoList.getContent()) {
+            List<TodoReference> prevTodoList = todoItemReferenceRepository.getListByCurrentId(todoItem.getId());
+            if (prevTodoList.size() > 0) {
+                List<Long> prevIds = new ArrayList<>();
+                for (TodoReference todoReference : prevTodoList) {
+                    prevIds.add(todoReference.getPrevTodoItem().getId());
+                }
+                todoItem.setPrevTodoIds(prevIds);
+            }
+        }
+
+        return todoList;
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +78,6 @@ public class TodoItemService {
                 .modDate(todoItem.getModDate())
                 .build();
 
-        // 참조 todo 목록 불러오기
         List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
 
         if (prevTodoItems.size() > 0) {
@@ -90,10 +102,15 @@ public class TodoItemService {
 
     @Transactional
     public String checkTodoItem(Long id, TodoItemDto todoItemDto) throws Exception {
-        TodoItem getTodoItem = todoItemRepository.getOne(id);
-        if (getTodoItem.getStatus().equals(Status.REF))
-            throw new Exception("참조하는 Todo 항목이 있습니다.");
+        List<TodoReference> prevTodoItemList= todoItemReferenceRepository.getListByCurrentId(id);
 
+        for (TodoReference todoTodoItem : prevTodoItemList) {
+            if (todoTodoItem.getPrevTodoItem().getIsChecked() == 0) {
+                throw new Exception("완료되지 않은 참조 Todo가 있습니다.");
+            }
+        }
+
+        TodoItem getTodoItem = todoItemRepository.getOne(id);
         getTodoItem.setIsChecked(todoItemDto.getIsChecked());
         getTodoItem.setModDate(LocalDateTime.now());
 
@@ -110,13 +127,13 @@ public class TodoItemService {
     public String modifyTodoItem(Long id, TodoItemDto todoItemDto) throws Exception {
         TodoItem getTodoItem = todoItemRepository.getOne(id);
 
-        // TODO: 2018-12-30 : 삭제할 prevTodo가 있는지 확인
+        // 삭제할 prevTodo가 있는지 확인
         if (todoItemDto.getDeleteIds().size() > 0) {
             int deleteCount = todoItemReferenceRepository.deletePrevTodoItemsByPrevIdAndCurrentId(todoItemDto.getDeleteIds(), id);
             log.info("삭제 :  {}", deleteCount);
         }
 
-        // TODO: 2019-01-01 : 추가할 prevTodo가 있는지 확인
+        // 추가할 prevTodo가 있는지 확인
         if (todoItemDto.getPrevIds().size() > 0) {
             IntStream.rangeClosed(0, todoItemDto.getPrevIds().size() - 1).forEach(index -> {
                         todoItemReferenceRepository.save(TodoReference.builder()
@@ -130,24 +147,14 @@ public class TodoItemService {
         getTodoItem.setContent(todoItemDto.getContent());
         getTodoItem.setModDate(LocalDateTime.now());
 
-        log.info(todoItemDto.toString());
+        //TodoItem savedTodoItem = todoItemRepository.saveAndFlush(getTodoItem);
 
-        // 수정 버튼 클릭시
-        //getTodoItem.setContent(todoItemDto.getContent());
-        //getTodoItem.setModDate(LocalDateTime.now());
-
-            /*if (todoItemDto.getReferenceIds().size() > 0) {
-                getTodoItem.setStatus(Status.REF);
-            }*/
-
-        // TODO: 2018-12-30 :
-        return null;
+        return "수정 완료 하였습니다.";
     }
 
     @Transactional
     public void deleteTodoItem(Long id) throws Exception {
 
-        // TODO: 2018-12-30 참조하는 TodoItem이 있는지 검사
         if (todoItemReferenceRepository.existsTodoReferencesByCurrentTodoItemId(id)) {
             throw new Exception("참조하는 Todo 항목이 있습니다.");
         }
