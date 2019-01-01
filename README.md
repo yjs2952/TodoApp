@@ -16,5 +16,5 @@
 - Settings -> Build, Execution, Deployment -> Compiler -> Annotation Processors 
   - Enable annotation processing 체크
 - 자동 build
-- 프로
+- 프로젝트 실행  
 - localhost:8080 접속
