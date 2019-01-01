@@ -2,7 +2,6 @@ package com.kakaoix.todoapp.controller;
 
 import com.kakaoix.todoapp.service.TodoItemService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,7 @@ public class PrevTodoIRestController {
         this.todoService = todoService;
     }
 
-    @GetMapping//(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<?> getSearchTodoList(Long id, String keyword) {
         return ResponseEntity.ok(todoService.getSearchTodoList(id, keyword));
     }

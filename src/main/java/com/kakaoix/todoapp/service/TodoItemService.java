@@ -37,12 +37,22 @@ public class TodoItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<TodoItem> getSearchTodoList(Long id, String keyword){
+    public List<TodoItem> getSearchTodoList(Long id, String keyword) {
+        List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
+
+        if (prevTodoItems.size() > 0) {
+            List<Long> exceptItemIds = new ArrayList<>();
+            for (TodoReference todo : prevTodoItems) {
+                exceptItemIds.add(todo.getPrevTodoItem().getId());
+            }
+            exceptItemIds.add(id);
+            return todoItemRepository.getTodoItemsByKeywordExceptSelfAndRefs(exceptItemIds, keyword);
+        }
         return todoItemRepository.getTodoItemsByKeywordExceptSelf(id, keyword);
     }
 
     @Transactional(readOnly = true)
-    public TodoItemDto getModifyTodoItem(Long id){
+    public TodoItemDto getModifyTodoItem(Long id) {
         TodoItem todoItem = todoItemRepository.getOne(id);
 
         // TodoDto 에 값 세팅
@@ -63,11 +73,8 @@ public class TodoItemService {
             for (TodoReference todo : prevTodoItems) {
                 prevItemIds.add(todo.getPrevTodoItem().getId());
             }
-            todoItemDto.setReferenceIds(prevItemIds);
+            todoItemDto.setPrevIds(prevItemIds);
         }
-
-        log.info("todo content : {}", todoItem.getContent());
-
         return todoItemDto;
     }
 
@@ -103,23 +110,42 @@ public class TodoItemService {
     public String modifyTodoItem(Long id, TodoItemDto todoItemDto) throws Exception {
         TodoItem getTodoItem = todoItemRepository.getOne(id);
 
-        // TODO: 2018-12-30 : 참조 Todo가 있는지 확인해야 한다
+        // TODO: 2018-12-30 : 삭제할 prevTodo가 있는지 확인
+        if (todoItemDto.getDeleteIds().size() > 0) {
+            int deleteCount = todoItemReferenceRepository.deletePrevTodoItemsByPrevIdAndCurrentId(todoItemDto.getDeleteIds(), id);
+            log.info("삭제 :  {}", deleteCount);
+        }
 
-
-        // 수정 버튼 클릭시
+        // TODO: 2019-01-01 : 추가할 prevTodo가 있는지 확인
+        if (todoItemDto.getPrevIds().size() > 0) {
+            IntStream.rangeClosed(0, todoItemDto.getPrevIds().size() - 1).forEach(index -> {
+                        todoItemReferenceRepository.save(TodoReference.builder()
+                                .currentTodoItem(todoItemRepository.getOne(id))
+                                .prevTodoItem(todoItemRepository.getOne(todoItemDto.getPrevIds().get(index)))
+                                .build());
+                    }
+            );
+            todoItemDto.setStatus(Status.REF);
+        }
         getTodoItem.setContent(todoItemDto.getContent());
         getTodoItem.setModDate(LocalDateTime.now());
+
+        log.info(todoItemDto.toString());
+
+        // 수정 버튼 클릭시
+        //getTodoItem.setContent(todoItemDto.getContent());
+        //getTodoItem.setModDate(LocalDateTime.now());
 
             /*if (todoItemDto.getReferenceIds().size() > 0) {
                 getTodoItem.setStatus(Status.REF);
             }*/
 
-    // TODO: 2018-12-30 :
+        // TODO: 2018-12-30 :
         return null;
-}
+    }
 
     @Transactional
-    public void deleteTodoItem(Long id) throws Exception{
+    public void deleteTodoItem(Long id) throws Exception {
 
         // TODO: 2018-12-30 참조하는 TodoItem이 있는지 검사
         if (todoItemReferenceRepository.existsTodoReferencesByCurrentTodoItemId(id)) {

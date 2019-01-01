@@ -13,10 +13,9 @@ public interface TodoItemRepository extends JpaRepository<TodoItem, Long> {
 
     List<TodoItem> getTodoItemsByIdIn(List<Long> referenceIds);
 
-    @Query(value = "SELECT t FROM TodoItem t WHERE t.id <> :id AND upper(t.content) LIKE CONCAT('%', upper(:keyword), '%') ORDER BY t.id DESC ")
+    @Query(value = "SELECT t FROM TodoItem t WHERE t.id <> :id AND UPPER(t.content) LIKE CONCAT('%', UPPER(:keyword), '%') ORDER BY t.id DESC ")
     List<TodoItem> getTodoItemsByKeywordExceptSelf(@Param("id") Long id,@Param("keyword") String keyword);
 
-    // TODO: 2018-12-31 : 참조 관계 삭제 메소드 만들어야함  (prev_id = ?)
-
-    // TODO: 2018-12-31 : 참조 관계 삭제 후 본체 삭제하는 메소드 만들어야 함
+    @Query(value = "SELECT t FROM TodoItem t WHERE t.id NOT IN :prevTodos AND UPPER(t.content) LIKE CONCAT('%', UPPER(:keyword), '%') ORDER BY t.id DESC ")
+    List<TodoItem> getTodoItemsByKeywordExceptSelfAndRefs(@Param("prevTodos") List<Long> prevTodos,@Param("keyword") String keyword);
 }

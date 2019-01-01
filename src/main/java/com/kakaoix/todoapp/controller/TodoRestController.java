@@ -75,8 +75,6 @@ public class TodoRestController {
     @PutMapping("/{id}")
     public ResponseEntity<?> modifyTodoItem(@PathVariable("id") Long id, @RequestBody TodoItemDto todoItemDto) {
 
-        log.info(todoItemDto.toString());
-
         ResponseEntity<?> entity = null;
         try {
             String message = null;

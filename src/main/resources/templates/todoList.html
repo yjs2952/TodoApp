@@ -124,46 +124,6 @@
                         <label class="col-form-label">조회 결과</label>
                         <div style="max-height: 200px;overflow: auto;">
                             <ul id="searchList" class="checked-list-box" style="padding-left: 0px;">
-                                <li class="list-group-item">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               id="selectRefId1">
-                                        <label style="width: 100%" class="custom-control-label"
-                                               for="selectRefId1" id="refContentId1">qqqqqqqqqqqqqqqqqqq</label>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               id="selectRefId2">
-                                        <label style="width: 100%" class="custom-control-label"
-                                               for="selectRefId2" id="refContentId2">qqqqqqqqqqqqqqqqqqq</label>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               id="selectRefId3">
-                                        <label style="width: 100%" class="custom-control-label"
-                                               for="selectRefId3" id="refContentId3">qqqqqqqqqqqqqqqqqqq</label>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               id="selectRefId4">
-                                        <label style="width: 100%" class="custom-control-label"
-                                               for="selectRefId4" id="refContentId4">qqqqqqqqqqqqqqqqqqq</label>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input"
-                                               id="selectRefId5">
-                                        <label style="width: 100%" class="custom-control-label"
-                                               for="selectRefId5" id="refContentId5">qqqqqqqqqqqqqqqqqqq</label>
-                                    </div>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -183,18 +143,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div>작성일 : </div>
-                        <div>수정일 : </div>
-                    </div>
-                    <div class="form-group">
-
-                    </div>
+                    <div class="form-group" id="date"></div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary">수정</button>
+                <button type="button" class="btn btn-primary" id="modifyButton">수정</button>
             </div>
         </div>
     </div>
@@ -203,6 +157,70 @@
 <script>
 
     $(document).ready(function () {
+
+    });
+
+    //date객체 YYYY-MM-DD 변환함수
+    function dateToYYYYMMDD(date){
+        if (date == null) return "";
+        function pad(num) {
+            num = num + '';
+            return num.length < 2 ? '0' + num : num;
+        }
+        return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate());
+    }
+
+
+    // todoItem 수정
+    $('#modifyButton').on("click", function () {
+        let id = $(this).parents("div[data-id]").attr('data-id');
+        let modifyContent = $('#modifyContent').val();
+        let refTodos = $('input:checkbox[name="refTodo"]:checked');
+        let searchTodos =  $('input:checkbox[name="searchTodo"]:checked');
+
+        if (modifyContent === null || modifyContent === '') {
+            alert('Todo item을 입력해 주세요.');
+            $('#modifyContent').focus();
+            return;
+        }
+
+        if (modifyContent.length > 255) {
+            alert('255자를 넘을 수 없습니다.');
+            $('#modifyContent').focus();
+            return;
+        }
+
+        let insertRefs = [];
+        let deleteRefs = [];
+
+        searchTodos.each(function () {
+            insertRefs.push($(this).val());
+        });
+
+        refTodos.each(function () {
+            deleteRefs.push($(this).val());
+        });
+
+        const jsonData = JSON.stringify({
+            id : id,
+            content : modifyContent,
+            prevIds : insertRefs,
+            deleteIds : deleteRefs
+        });
+
+        $.ajax({
+            url: "/api/todos/" + id,
+            type: "PUT",
+            data: jsonData,
+            contentType: "application/json",
+            dataType: "text",
+            success : function (data) {
+                console.log(data)
+            },
+            error : function (request, status, error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+        });
 
     });
 
@@ -230,7 +248,7 @@
             type: "POST",
             data: jsonData,
             contentType: "application/json",
-            dataType: "text",  // Todo : 이 부분을 json 으로 바꾸면 에러가 난다. 이유가 뭐지?
+            dataType: "text",
             success: function (data) {
                 alert(data);
                 location.href = '/';
@@ -246,8 +264,6 @@
             const id = $(this).parents("div[data-id]").attr('data-id');
             const keyword = $(this).val();
 
-            console.log(id); // todo : 나중에 삭제
-
             $.ajax({
                 url : "/api/prevtodos",
                 type : "GET",
@@ -260,7 +276,7 @@
                             searchTodoItems +=
                                 `<li class="list-group-item">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input"
+                                    <input type="checkbox" class="custom-control-input" name="searchTodo" value="${data[i].id}"
                                            id="searchTodo${data[i].id}">
                                     <label style="width: 90%" class="custom-control-label custom-control-inline"
                                            for="searchTodo${data[i].id}" id="searchTodoContent${data[i].id}">${data[i].id}&nbsp&nbsp ${data[i].content}</label>
@@ -282,7 +298,9 @@
         let searchList = $('#searchList');
         let referencedList = $('#check-list-box');
         let modifyContent = $('#modifyContent');
+        let dateHtml = $('#date');
 
+        // 모달창 내부 값 초기화
         searchList.html('');
         referencedList.html('');
         modifyContent.val('');
@@ -292,20 +310,25 @@
             url: "/api/todos/" + id,
             type: "GET",
             success: function (data) {
-                const jsonData = JSON.stringify(data);
-                console.log(jsonData); // Todo : 나중에 삭제
+                let regDate = `<div>작성일 : ${dateToYYYYMMDD(new Date(data['regDate']))}</div>`;
+                let modDate = data['modDate'] == null ? '' : `수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}`;
+
                 modifyContent.val(data.content);
+                dateHtml.html(`${regDate}${modDate}`);
+
+                let prevIds = data['prevIds'];
 
                 // Todo : 나중에 함수로 빼는게 좋을 듯
-                if (data.referenceIds != null && data.referenceIds.length > 0) {
+                // 참조된 todo가 있는지 확인
+                if (prevIds != null && prevIds.length > 0) {
                     let checkListHtml = ``;
-                    for (let i = 0; i < data.referenceIds.length; i++) {
+                    for (let i = 0; i < prevIds.length; i++) {
                         checkListHtml +=
                             `<div class="custom-control custom-control-inline custom-checkbox ">
                                 <input type="checkbox" class="custom-control-input"
-                                    id="checkRefId${data.referenceIds[i]}">
+                                    id="checkRefId${prevIds[i]}" name="refTodo" value="${prevIds[i]}">
                                 <label style="width: 100%" class="custom-control-label"
-                                    for="checkRefId${data.referenceIds[i]}" id="refId">${data.referenceIds[i]}</label>
+                                    for="checkRefId${prevIds[i]}" id="refId">${prevIds[i]}</label>
                             </div>`
                     }
                     referencedList.html(checkListHtml);
