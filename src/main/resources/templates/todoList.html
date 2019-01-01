@@ -209,6 +209,12 @@
             return;
         }
 
+        if(content.length > 255){
+            alert('255자를 넘을 수 없습니다.');
+            $('#content').focus();
+            return;
+        }
+
         const jsonData = JSON.stringify({
             content: content
         });
