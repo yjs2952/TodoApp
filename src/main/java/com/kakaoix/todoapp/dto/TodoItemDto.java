@@ -1,5 +1,6 @@
 package com.kakaoix.todoapp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kakaoix.todoapp.domain.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +14,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TodoItemDto {
     private Long id;
     private String content;
     private int isChecked;
     private Status status;
     private List<Long> referenceIds;
+    private String keyword;
     private int modifyType;
     private LocalDateTime regDate;
     private LocalDateTime modDate;

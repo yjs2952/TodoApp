@@ -37,6 +37,11 @@ public class TodoItemService {
     }
 
     @Transactional(readOnly = true)
+    public List<TodoItem> getSearchTodoList(Long id, String keyword){
+        return todoItemRepository.getTodoItemsByKeywordExceptSelf(id, keyword);
+    }
+
+    @Transactional(readOnly = true)
     public TodoItemDto getModifyTodoItem(Long id){
         TodoItem todoItem = todoItemRepository.getOne(id);
 

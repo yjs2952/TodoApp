@@ -10,7 +10,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -27,13 +30,26 @@ public class TodoRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable) {
-        Page<TodoItem> todoItems = todoService.getTodoList(pageable);
+
+        //Page<TodoItem> todoItems = todoService.getTodoList(pageable);
         /*PageMetadata pageMetadata =
                 new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
         PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
         resources.add(linkTo(methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*/
-        return ResponseEntity.ok(todoItems);
+        return ResponseEntity.ok(todoService.getTodoList(pageable));
     }
+
+    /*@GetMapping("/{keyword}")
+    public ResponseEntity<?> getSearchTodoList(@PathVariable("keyword") String keyword) {
+        log.info("keyword : {}",keyword);
+
+        List<TodoItem> todoItems = todoService.getSearchTodoList(keyword);
+        *//*PageMetadata pageMetadata =
+                new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
+        PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
+        resources.add(linkTo(methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*//*
+        return ResponseEntity.ok(todoItems);
+    }*/
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> getTodoItem(@PathVariable("id") Long id) {

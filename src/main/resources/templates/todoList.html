@@ -24,7 +24,7 @@
 <div class="container my-5">
     <h1>To do List</h1>
     <div class="form-content">
-        <form>
+        <form onsubmit="return false">
             <div class="input-group mb-3">
                 <input type="text" id="content" class="form-control" placeholder="Todo item">
                 <div class="input-group-append">
@@ -57,8 +57,8 @@
                 <!--th:onClick=""-->
                 <!-- {() => deleteItem(item.id)}-->
                 <!--<button class="ref close fas fa-tags fa-1x"></button>-->
-                <button class="modifyModal close far fa-edit fa-1x mx-2"></button>
-                <button class="delete close far fa-trash-alt fa-1x"></button>
+                <button class="modifyModalButton close far fa-edit fa-1x mx-2"></button>
+                <button class="deleteButton close far fa-trash-alt fa-1x"></button>
                 <!-- Todo : close 관련 css 따로 빼야됨 -->
                 <!--<button type="button" class="delete btn btn-xdanger btn-sm">
                     <i class="far fa-trash-alt fa-xs"></i>
@@ -100,7 +100,7 @@
 <!--<div th:replace="layout/footer::footer"></div>-->
 
 <!-- modal -->
-<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="modifyModal" th:data-id="0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -111,57 +111,57 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form id="modifyForm" onsubmit="return false">
                     <div class="form-group">
                         <label for="modifyContent" class="col-form-label">Todo Item</label>
                         <textarea class="form-control" id="modifyContent"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="searchTodoItem" class="col-form-label">참조 Todo 조회</label>
-                        <input type="text" class="form-control" id="searchTodoItem">
+                        <input type="text" class="form-control" id="searchTodoItem" placeholder="Todo 명을 입력하세요.">
                     </div>
                     <div class="form-group">
-                        <label for="searchTodoItem" class="col-form-label">조회 결과</label>
-                        <div class="well" style="max-height: 200px;overflow: auto;">
-                            <ul id="searchList" class="list-group checked-list-box">
+                        <label class="col-form-label">조회 결과</label>
+                        <div style="max-height: 200px;overflow: auto;">
+                            <ul id="searchList" class="checked-list-box" style="padding-left: 0px;">
                                 <li class="list-group-item">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input"
-                                               id="checkRefId">
+                                               id="selectRefId1">
                                         <label style="width: 100%" class="custom-control-label"
-                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                               for="selectRefId1" id="refContentId1">qqqqqqqqqqqqqqqqqqq</label>
                                     </div>
                                 </li>
                                 <li class="list-group-item">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input"
-                                               id="checkRefId">
+                                               id="selectRefId2">
                                         <label style="width: 100%" class="custom-control-label"
-                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                               for="selectRefId2" id="refContentId2">qqqqqqqqqqqqqqqqqqq</label>
                                     </div>
                                 </li>
                                 <li class="list-group-item">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input"
-                                               id="checkRefId">
+                                               id="selectRefId3">
                                         <label style="width: 100%" class="custom-control-label"
-                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                               for="selectRefId3" id="refContentId3">qqqqqqqqqqqqqqqqqqq</label>
                                     </div>
                                 </li>
                                 <li class="list-group-item">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input"
-                                               id="checkRefId">
+                                               id="selectRefId4">
                                         <label style="width: 100%" class="custom-control-label"
-                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                               for="selectRefId4" id="refContentId4">qqqqqqqqqqqqqqqqqqq</label>
                                     </div>
                                 </li>
                                 <li class="list-group-item">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input"
-                                               id="checkRefId">
+                                               id="selectRefId5">
                                         <label style="width: 100%" class="custom-control-label"
-                                               for="checkRefId" id="refId">qqqqqqqqqqqqqqqqqqq</label>
+                                               for="selectRefId5" id="refContentId5">qqqqqqqqqqqqqqqqqqq</label>
                                     </div>
                                 </li>
                             </ul>
@@ -182,24 +182,30 @@
                                 </li>-->
                             </div>
                         </div>
-                        <!--<select multiple class="form-control" id="selectTodoItems">
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>-->
+                    </div>
+                    <div class="form-group">
+                        <div>작성일 : </div>
+                        <div>수정일 : </div>
+                    </div>
+                    <div class="form-group">
+
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Send message</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary">수정</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+
+    $(document).ready(function () {
+
+    });
+
     $('#addTodo').on("click", function () {
         const content = $('#content').val();
 
@@ -209,7 +215,7 @@
             return;
         }
 
-        if(content.length > 255){
+        if (content.length > 255) {
             alert('255자를 넘을 수 없습니다.');
             $('#content').focus();
             return;
@@ -235,33 +241,76 @@
         });
     });
 
-    $('.modifyModal').on("click", function () {
-        const id = $(this).parents("div[data-tno]").attr('data-tno');
+    $('#searchTodoItem').on("keypress", function (e) {
+        if (e.keyCode === 13) {
+            const id = $(this).parents("div[data-id]").attr('data-id');
+            const keyword = $(this).val();
 
+            console.log(id); // todo : 나중에 삭제
+
+            $.ajax({
+                url : "/api/prevtodos",
+                type : "GET",
+                data : {keyword : keyword,
+                        id : id},
+                success: function (data) {
+                    if (data != null && data.length > 0) {
+                        let searchTodoItems = ``;
+                        for (let i = 0; i < data.length; i++) {
+                            searchTodoItems +=
+                                `<li class="list-group-item">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="searchTodo${data[i].id}">
+                                    <label style="width: 90%" class="custom-control-label custom-control-inline"
+                                           for="searchTodo${data[i].id}" id="searchTodoContent${data[i].id}">${data[i].id}&nbsp&nbsp ${data[i].content}</label>
+                                </div>
+                            </li>`
+                        }
+                        $('#searchList').html(searchTodoItems);
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                }
+            });
+        }
+    });
+
+    $('.modifyModalButton').on("click", function () {
+
+        let searchList = $('#searchList');
+        let referencedList = $('#check-list-box');
+        let modifyContent = $('#modifyContent');
+
+        searchList.html('');
+        referencedList.html('');
+        modifyContent.val('');
+
+        const id = $(this).parents("div[data-tno]").attr('data-tno');
         $.ajax({
             url: "/api/todos/" + id,
             type: "GET",
             success: function (data) {
                 const jsonData = JSON.stringify(data);
-                console.log(jsonData);
-                $('#modifyContent').val(data.content);
+                console.log(jsonData); // Todo : 나중에 삭제
+                modifyContent.val(data.content);
 
+                // Todo : 나중에 함수로 빼는게 좋을 듯
                 if (data.referenceIds != null && data.referenceIds.length > 0) {
-
-                    let checkListBox = $('#check-list-box');
-                    checkListBox.html('');
-
+                    let checkListHtml = ``;
                     for (let i = 0; i < data.referenceIds.length; i++) {
-                        checkListBox.append(
+                        checkListHtml +=
                             `<div class="custom-control custom-control-inline custom-checkbox ">
                                 <input type="checkbox" class="custom-control-input"
                                     id="checkRefId${data.referenceIds[i]}">
                                 <label style="width: 100%" class="custom-control-label"
                                     for="checkRefId${data.referenceIds[i]}" id="refId">${data.referenceIds[i]}</label>
                             </div>`
-                        );
                     }
+                    referencedList.html(checkListHtml);
                 }
+                //-- 나중에 함수로 빼는게 좋을 듯
             },
             error: function (request, status, error) {
                 alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
@@ -269,6 +318,7 @@
         });
 
         let modifyForm = $('#modifyModal');
+        modifyForm.attr('data-id', id);
         modifyForm.modal('show');
     });
 
@@ -298,9 +348,8 @@
         })
     });
 
-    $('.delete').on("click", function () {
+    $('.deleteButton').on("click", function () {
         const id = $(this).parent().attr('data-tno');
-
         $.ajax({
             url: "/api/todos/" + id,
             type: "DELETE",
