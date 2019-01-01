@@ -12,4 +12,4 @@
 - git pull https://github.com/yjs2952/TodoApp
 - intelliJ 로 project import -> gradle로 설정
 - 자동 build
-- localhost:8080 
+- localhost:8080 접속
