@@ -24,7 +24,7 @@ public class TodoReference {
     @JoinColumn(name = "current_todo_id")
     private TodoItem currentTodoItem;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "next_todo_id")
-    private TodoItem nextTodoItem;
+    private TodoItem nextTodoItem;*/
 }

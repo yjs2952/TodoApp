@@ -10,7 +10,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -27,12 +30,13 @@ public class TodoRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable) {
-        Page<TodoItem> todoItems = todoService.getTodoList(pageable);
+
+        //Page<TodoItem> todoItems = todoService.getTodoList(pageable);
         /*PageMetadata pageMetadata =
                 new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
         PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
         resources.add(linkTo(methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*/
-        return ResponseEntity.ok(todoItems);
+        return ResponseEntity.ok(todoService.getTodoList(pageable));
     }
 
     @GetMapping(value = "/{id}")
@@ -59,8 +63,6 @@ public class TodoRestController {
     @PutMapping("/{id}")
     public ResponseEntity<?> modifyTodoItem(@PathVariable("id") Long id, @RequestBody TodoItemDto todoItemDto) {
 
-        log.info(todoItemDto.toString());
-
         ResponseEntity<?> entity = null;
         try {
             String message = null;
@@ -68,7 +70,7 @@ public class TodoRestController {
             if (todoItemDto.getModifyType() == 1) {
                 message = todoService.checkTodoItem(id, todoItemDto);
             } else {
-                message = todoService.modifyTodoItem(id, todoItemDto);
+                todoService.modifyTodoItem(id, todoItemDto);
             }
 
             entity = new ResponseEntity<>(message, HttpStatus.OK);

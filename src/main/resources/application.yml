@@ -1,37 +1,24 @@
 spring:
   profiles:
     active: local
-  # mvc:
-  #  static-path-pattern: /resources/**
   thymeleaf:
     cache: false
-    #  enabled: true
-    # encoding: UTF-8
   datasource:
     driver-class-name: org.h2.Driver
-    #url: jdbc:h2:tcp://localhost:9092/mem:testdb;MVCC=TRUE
     url: jdbc:h2:mem:testdb
     username: sa
     password:
     initialization-mode: always
   jpa:
-    #  database-platform: H2
     show-sql: true
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
-        #use_sql_comments: true
   http:
     encoding:
       charset: UTF-8
-    # output:
-    #  ansi:
-    #   enabled: always
-  #server:
-  # tomcat:
-  #  uri-encoding: UTF-8
   data:
     rest:
       base-path: /api
@@ -40,11 +27,11 @@ spring:
   devtools:
     livereload:
       enabled: true
-logging:
-  level:
-    org:
-      hibernate:
-        type: trace
+#logging:
+ # level:
+  #  org:
+   #   hibernate:
+    #    type: trace
 
 
 
