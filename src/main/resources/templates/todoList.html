@@ -185,7 +185,7 @@
                 location.href = '/';
             },
             error: function (request, status, error) {
-                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                alert(request.responseText + "\n");
             }
         });
     }
@@ -284,7 +284,7 @@
                 location.href = '/';
             },
             error: function (request, status, error) {
-                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                alert(request.responseText + "\n");
             }
         });
     });
@@ -311,7 +311,7 @@
                     }
                 },
                 error: function (request, status, error) {
-                    alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                    alert(request.responseText + "\n");
                 }
             });
         }
@@ -346,16 +346,14 @@
                 if (prevIds != null && prevIds.length > 0) {
                     prevTodoItemListDiv.html(getPrevTodoItemList(prevIds));
                 }
-                //-- 나중에 함수로 빼는게 좋을 듯
+                let modifyForm = $('#modifyModal');
+                modifyForm.attr('data-id', id);
+                modifyForm.modal('show');
             },
             error: function (request, status, error) {
-                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                alert(request.responseText + "\n");
             }
         });
-
-        let modifyForm = $('#modifyModal');
-        modifyForm.attr('data-id', id);
-        modifyForm.modal('show');
     });
 
     $('.todoCheck').on("change", function () {
@@ -393,7 +391,7 @@
                 location.href = '/';
             },
             error: function (request, status, error) {
-                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+                alert(request.responseText + "\n");
             }
         })
     });
