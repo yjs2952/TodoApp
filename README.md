@@ -12,5 +12,8 @@
 - git pull https://github.com/yjs2952/TodoApp
 - H2 DB 설치 http://www.h2database.com/html/main.html
 - intelliJ 로 project import -> gradle로 설정
+- intelliJ에서 lombok plugin 설치
+- Settings -> Build, Execution, Deployment -> Compiler -> Annotation Processors 
+  - Enable annotation processing 체크
 - 자동 build
 - localhost:8080 접속
