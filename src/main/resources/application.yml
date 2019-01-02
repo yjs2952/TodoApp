@@ -1,25 +1,39 @@
 spring:
-  mvc:
-    static-path-pattern: /resources/**
+  profiles:
+    active: local
   thymeleaf:
-    enabled: true
-    encoding: UTF-8
-  h2:
-    console:
-      enabled: true
+    cache: false
   datasource:
     driver-class-name: org.h2.Driver
-    #url: jdbc:h2:tcp://localhost:9092/mem:testdb;MVCC=TRUE
     url: jdbc:h2:mem:testdb
     username: sa
     password:
     initialization-mode: always
   jpa:
-    database-platform: H2
     show-sql: true
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
-        use_sql_comments: true
+  http:
+    encoding:
+      charset: UTF-8
+  data:
+    rest:
+      base-path: /api
+      default-page-size: 10
+      max-page-size: 10
+  devtools:
+    livereload:
+      enabled: true
+#logging:
+ # level:
+  #  org:
+   #   hibernate:
+    #    type: trace
+
+
+
+
+

@@ -1,39 +1,46 @@
 package com.kakaoix.todoapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "todo_item")
-@Getter
-@Setter
-@RequiredArgsConstructor
+@Entity @Table(name = "todo_item")
+@Getter @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TodoItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
+    // TODO: 2019-01-01 : validate 기능 작동은 하나 에러 메시지 반환이 안됨...... 
+    @Size(max = 255, message = "최대 255자를 넘을 수 없습니다.")
+    @NotEmpty(message = "Todo 명을 입력해 주세요.")
     @Column(nullable = false)
     private String content;
 
-    @NonNull
     @Column(length = 1, columnDefinition = "int default 0")
     private Integer isChecked;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "referenceItem")
-    private List<TodoItem> referenceItems;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 4, nullable = false)
+    private Status status;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date regDate;
+    @Column
+    private LocalDateTime regDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modDate;
+    @Column
+    private LocalDateTime modDate;
+
+    @Transient
+    private List<Long> prevTodoIds;
 }

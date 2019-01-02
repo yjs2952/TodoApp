@@ -1,18 +1,406 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Todo list</title>
+    <title>Todo App</title>
 
     <!-- bootstrap 4 -->
-    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
-    <script src="/static/js/jQuery/jQuery3.3.1.js"></script>
-    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{css/bootstrap/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{css/todoList.css}">
+
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+    <script th:src="@{js/jQuery/jQuery3.3.1.js}"></script>
+    <script th:src="@{js/bootstrap/bootstrap.min.js}"></script>
+    <script th:src="@{js/todoList.js}"></script>
+
 </head>
 <body>
+<div class="container my-5">
+    <h1>To do List</h1>
+    <div class="form-content">
+        <form onsubmit="return false">
+            <div class="input-group mb-3">
+                <input type="text" id="content" class="form-control" placeholder="Todo item">
+                <div class="input-group-append">
+                    <button type="button" id="addTodo" class="btn btn-primary">
+                        Add Todo
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div id="todo-content" th:data-pno="${todoList.number+1}" class="todo-content">
+            <div th:data-tno="${todo.id}" th:each="todo : ${todoList}"
+                 class="alert alert-success d-flex flex-row align-items-center">
+                <div class="custom-control custom-checkbox mr-2">
+                    <input type="checkbox" class="todoCheck custom-control-input"
+                           th:id="check + (${todo.id})"
+                           th:checked="${todo.isChecked == 1 ? true : false}"><!--th:onchange="aa"-->
+                    <label class="custom-control-label" th:for="check + (${todo.id})"></label>
+                </div>
+                <div class="mr-3" th:text="${todo.id}"></div>
+                <div class="todo-text text-center">
+                    <div th:classappend="${todo.isChecked == 1 ? 'checked' : ''}"
+                         th:text="${todo?.content}">
+                    </div>
+                    <div>
+                        <span th:each="id : ${todo.getPrevTodoIds()}" th:text="'@'+${id}" class="mr-2"></span>
+                    </div>
+                </div>
 
+                <div class="mx-5">
+                    <div th:text="'작성일 : ' + ${#temporals.format(todo.regDate, 'yyyy-MM-dd')}"></div>
+                    <div th:text="'수정일 : ' + ${#temporals.format(todo.modDate, 'yyyy-MM-dd')}"
+                         th:if="${todo?.modDate}"></div>
+                </div>
+                <button class="modifyModalButton close far fa-edit fa-1x mx-2"></button>
+                <button class="deleteButton close far fa-trash-alt fa-1x"></button>
+            </div>
+        </div>
+    </div>
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" style="text-align:center;">
+        <ul class="pagination pagination-sm justify-content-center"
+            th:with="startNumber=${T(Math).floor(todoList.number/10)}*10+1, endNumber=(${todoList.totalPages} > ${startNumber} + 9) ? ${startNumber} + 9 : ${todoList.totalPages}">
+            <li class="page-item" th:classappend="(${todoList.number} == 0) ? 'disabled' : ''">
+                <a class="page-link" aria-label="Previous" href="?page=1">&laquo;</a>
+            </li>
+            <li class="page-item" th:style="${todoList.first} ? 'display:none'">
+                <a class="page-link" th:href="@{/(page=${todoList.number})}">&lsaquo;</a>
+            </li>
+
+            <li th:each="page :${#numbers.sequence(startNumber, endNumber)}" th:class="page-item"
+                th:classappend="(${page} == ${todoList.number}+1) ? 'active' : ''">
+                <a th:href="@{/(page=${page})}">
+                    <span class="page-link" th:text="${page}">
+                        <span class="sr-only">(current)</span>
+                    </span>
+                </a>
+            </li>
+
+            <li class="page-item" th:style="${todoList.last} ? 'display:none'">
+                <a class="page-link" th:href="@{/(page=${todoList.number}+2)}">&rsaquo;</a>
+            </li>
+            <li class="page-item" th:classappend="(${todoList.number} == ${todoList.totalPages} - 1) ? 'disabled' : ''">
+                <a class="page-link" aria-label="Next" th:href="@{/(page=${todoList.totalPages})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /Pagination -->
+</div>
+<!--<div th:replace="layout/footer::footer"></div>-->
+
+<!-- modal -->
+<div class="modal fade" id="modifyModal" th:data-id="0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">To do</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="modifyForm" onsubmit="return false">
+                    <div class="form-group">
+                        <label for="modifyContent" class="col-form-label">Todo Item</label>
+                        <textarea class="form-control" id="modifyContent"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchTodoItem" class="col-form-label">참조할 Todo 조회 (선택 시 참조 추가)</label>
+                        <input type="text" class="form-control" id="searchTodoItem" placeholder="Todo 명을 입력하세요.">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">조회 결과</label>
+                        <div style="max-height: 200px;overflow: auto;">
+                            <ul id="searchList" class="checked-list-box" style="padding-left: 0px;">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>참조 Todo 목록 (선택 시 참조 제거)</label>
+                        <div class="well" style="max-height: 300px;overflow-y: auto;">
+                            <div id="check-list-box" class="checked-list-box">
+                                <!--<li class="list-group-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="checkRefId">&lt;!&ndash;th:onchange="aa"&ndash;&gt;
+                                        <label style="width: 100%" class="custom-control-label"
+                                               for="checkRefId" id="refId"></label>
+                                    </div>
+                                </li>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="date"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="modifyButton">수정</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+    });
+
+    function addTodoItem() {
+        const content = $('#content').val();
+
+        if (content === null || content === '') {
+            alert('Todo item을 입력해 주세요.');
+            $('#content').focus();
+            return;
+        }
+
+        if (content.length > 255) {
+            alert('255자를 넘을 수 없습니다.');
+            $('#content').focus();
+            return;
+        }
+
+        const jsonData = JSON.stringify({
+            content: content
+        });
+
+        $.ajax({
+            url: "/api/todos",
+            type: "POST",
+            data: jsonData,
+            contentType: "application/json",
+            dataType: "text",
+            success: function (data) {
+                alert(data);
+                location.href = '/';
+            },
+            error: function (request, status, error) {
+                alert(request.responseText + "\n");
+            }
+        });
+    }
+
+    //date객체 YYYY-MM-DD 변환함수
+    function dateToYYYYMMDD(date) {
+        if (date == null) return "";
+        function pad(num) {
+            num = num + '';
+            return num.length < 2 ? '0' + num : num;
+        }
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    }
+
+    // 조회한 todo목록 나열
+    function getSearchTodoItems(data) {
+        let searchTodoItems = ``;
+        for (let i = 0; i < data.length; i++) {
+            searchTodoItems +=
+                `<li class="list-group-item">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" name="searchTodo" value="${data[i].id}"
+                               id="searchTodo${data[i].id}">
+                        <label style="width: 90%" class="custom-control-label custom-control-inline"
+                               for="searchTodo${data[i].id}" id="searchTodoContent${data[i].id}">${data[i].id}&nbsp&nbsp ${data[i].content}</label>
+                    </div>
+                </li>`
+        }
+        $('#searchList').html(searchTodoItems);
+    }
+
+    function getPrevTodoItemList(prevIds) {
+        let checkListHtml = ``;
+        for (let i = 0; i < prevIds.length; i++) {
+            checkListHtml +=
+                `<div class="custom-control custom-control-inline custom-checkbox ">
+                    <input type="checkbox" class="custom-control-input"
+                        id="checkRefId${prevIds[i]}" name="refTodo" value="${prevIds[i]}">
+                    <label style="width: 100%" class="custom-control-label"
+                        for="checkRefId${prevIds[i]}" id="refId">${prevIds[i]}</label>
+                </div>`
+        }
+        return checkListHtml;
+    }
+
+    $('#content').on("keypress", function (e) {
+        if (e.keyCode === 13) {
+            addTodoItem();
+        }
+    });
+
+    // todoItem 수정
+    $('#modifyButton').on("click", function () {
+        const id = $(this).parents("div[data-id]").attr('data-id');
+        const modifyContent = $('#modifyContent').val();
+        const refTodos = $('input:checkbox[name="refTodo"]:checked');
+        const searchTodos = $('input:checkbox[name="searchTodo"]:checked');
+
+        if (modifyContent === null || modifyContent === '') {
+            alert('Todo item을 입력해 주세요.');
+            $('#modifyContent').focus();
+            return;
+        }
+
+        if (modifyContent.length > 255) {
+            alert('255자를 넘을 수 없습니다.');
+            $('#modifyContent').focus();
+            return;
+        }
+
+        let insertRefs = [];
+        let deleteRefs = [];
+
+        searchTodos.each(function () {
+            insertRefs.push($(this).val());
+        });
+
+        refTodos.each(function () {
+            deleteRefs.push($(this).val());
+        });
+
+        const jsonData = JSON.stringify({
+            id: id,
+            content: modifyContent,
+            prevIds: insertRefs,
+            deleteIds: deleteRefs
+        });
+
+        $.ajax({
+            url: "/api/todos/" + id,
+            type: "PUT",
+            data: jsonData,
+            contentType: "application/json",
+            dataType: "text",
+            success: function (data) {
+                alert(data);
+
+                const page = $('#todo-content').attr('data-pno');
+                location.href = '/?page=' + page;
+            },
+            error: function (request, status, error) {
+                alert(request.responseText + "\n");
+            }
+        });
+    });
+
+    $('#addTodo').on("click", function () {
+        addTodoItem();
+    });
+
+    $('#searchTodoItem').on("keypress", function (e) {
+        if (e.keyCode === 13) {
+            const id = $(this).parents("div[data-id]").attr('data-id');
+            const keyword = $(this).val();
+
+            $.ajax({
+                url: "/api/prevtodos",
+                type: "GET",
+                data: {
+                    keyword: keyword,
+                    id: id
+                },
+                success: function (data) {
+                    if (data != null && data.length > 0) {
+                        getSearchTodoItems(data);
+                    }
+                },
+                error: function (request, status, error) {
+                    alert(request.responseText + "\n");
+                }
+            });
+        }
+    });
+
+    $('.modifyModalButton').on("click", function () {
+        let searchList = $('#searchList');
+        let prevTodoItemListDiv = $('#check-list-box');
+        let modifyContent = $('#modifyContent');
+        let dateHtml = $('#date');
+
+        // 모달창 내부 값 초기화
+        searchList.html('');
+        prevTodoItemListDiv.html('');
+        modifyContent.val('');
+
+        const id = $(this).parents("div[data-tno]").attr('data-tno');
+        $.ajax({
+            url: "/api/todos/" + id,
+            type: "GET",
+            success: function (data) {
+                let regDate = `<div>작성일 : ${dateToYYYYMMDD(new Date(data['regDate']))}</div>`;
+                let modDate = data['modDate'] == null ? '' : `<div>수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}</div>`;
+
+                modifyContent.val(data.content);
+                dateHtml.html(`${regDate}${modDate}`);
+
+                let prevIds = data['prevIds'];
+
+                // 참조된 todo가 있는지 확인
+                if (prevIds != null && prevIds.length > 0) {
+                    prevTodoItemListDiv.html(getPrevTodoItemList(prevIds));
+                }
+                let modifyForm = $('#modifyModal');
+                modifyForm.attr('data-id', id);
+                modifyForm.modal('show');
+            },
+            error: function (request, status, error) {
+                alert(request.responseText + "\n");
+            }
+        });
+    });
+
+    $('.todoCheck').on("change", function () {
+        const id = $(this).parents("div[data-tno]").attr('data-tno');
+        const isChecked = $(this).prop('checked') === true ? 1 : 0;
+        const jsonData = JSON.stringify({
+            isChecked: isChecked,
+            modifyType: 1   // modifyType (1 : 체크박스 선택시, 0 : 수정 모달 버튼 클릭시)
+        });
+
+        $.ajax({
+            url: "/api/todos/" + id,
+            data: jsonData,
+            type: "PUT",
+            contentType: "application/json",
+            dataType: "text",
+            success: function (data) {
+                alert(data);
+
+                const page = $('#todo-content').attr('data-pno');
+                location.href = '/?page=' + page;
+            },
+            error: function (request, status, error) {
+                alert(request.responseText + "\n");
+                $(`input:checkbox[id="check${id}"]`).prop('checked', false);
+            }
+        })
+    });
+
+    $('.deleteButton').on("click", function () {
+        const id = $(this).parent().attr('data-tno');
+        $.ajax({
+            url: "/api/todos/" + id,
+            type: "DELETE",
+            success: function (data) {
+                alert(data);
+
+                const page = $('#todo-content').attr('data-pno');
+                location.href = '/?page=' + page;
+            },
+            error: function (request, status, error) {
+                alert(request.responseText + "\n");
+            }
+        })
+    });
+</script>
 </body>
 </html>
