@@ -15,6 +15,8 @@
 - intelliJ에서 lombok plugin 설치
 - Settings -> Build, Execution, Deployment -> Compiler -> Annotation Processors 
   - Enable annotation processing 체크
+- Settings -> Languages & Frameworks
+  -> Javascript language version -> ECMAScript 6 설정
 - 자동 build
 - 프로젝트 실행  
 - localhost:8080 접속
