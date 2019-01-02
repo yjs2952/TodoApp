@@ -1,21 +1,14 @@
 package com.kakaoix.todoapp.controller;
 
-import com.kakaoix.todoapp.domain.TodoItem;
 import com.kakaoix.todoapp.dto.TodoItemDto;
 import com.kakaoix.todoapp.service.TodoItemService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Slf4j
 @RequestMapping("/api/todos")
@@ -71,7 +64,6 @@ public class TodoRestController {
             e.printStackTrace();
             entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
         return entity;
     }
 

@@ -49,13 +49,13 @@ function getSearchTodoItems(data) {
     for (let i = 0; i < data.length; i++) {
         searchTodoItems +=
             `<li class="list-group-item">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" name="searchTodo" value="${data[i].id}"
-                               id="searchTodo${data[i].id}">
-                        <label style="width: 90%" class="custom-control-label custom-control-inline"
-                               for="searchTodo${data[i].id}" id="searchTodoContent${data[i].id}">${data[i].id}&nbsp&nbsp ${data[i].content}</label>
-                    </div>
-                </li>`
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" name="searchTodo" value="${data[i].id}"
+                           id="searchTodo${data[i].id}">
+                    <label style="width: 90%" class="custom-control-label custom-control-inline"
+                           for="searchTodo${data[i].id}" id="searchTodoContent${data[i].id}">${data[i].id}&nbsp&nbsp ${data[i].content}</label>
+                </div>
+            </li>`
     }
     $('#searchList').html(searchTodoItems);
 }
@@ -65,11 +65,11 @@ function getPrevTodoItemList(prevIds) {
     for (let i = 0; i < prevIds.length; i++) {
         checkListHtml +=
             `<div class="custom-control custom-control-inline custom-checkbox ">
-                    <input type="checkbox" class="custom-control-input"
-                        id="checkRefId${prevIds[i]}" name="refTodo" value="${prevIds[i]}">
-                    <label style="width: 100%" class="custom-control-label"
-                        for="checkRefId${prevIds[i]}" id="refId">${prevIds[i]}</label>
-                </div>`
+                <input type="checkbox" class="custom-control-input"
+                    id="checkRefId${prevIds[i]}" name="refTodo" value="${prevIds[i]}">
+                <label style="width: 100%" class="custom-control-label"
+                    for="checkRefId${prevIds[i]}" id="refId">${prevIds[i]}</label>
+            </div>`
     }
     return checkListHtml;
 }
@@ -208,7 +208,7 @@ $('.todoCheck').on("change", function () {
     const isChecked = $(this).prop('checked') === true ? 1 : 0;
     const jsonData = JSON.stringify({
         isChecked: isChecked,
-        modifyType: 1   // modifyType (1 : 체크박스 선택시, 0 : 수정 모달 버튼 클릭시)
+        modifyType: 1   // modifyType (1 : 완료여부 체크박스 선택시, 0 : 수정 버튼 클릭시)
     });
 
     $.ajax({
