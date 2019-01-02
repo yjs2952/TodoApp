@@ -114,6 +114,19 @@ public class TodoItemService {
             }
         }
 
+        // 자신을 참조하면서 완료상태인 Todo가 있는지 확인
+        List<TodoReference> currentTodoItemList = todoItemReferenceRepository.getListByPrevId(id);
+        if (currentTodoItemList.size() > 0) {
+            for (TodoReference todoReference : currentTodoItemList) {
+                if (todoReference.getCurrentTodoItem().getIsChecked() == 1) {
+                    TodoItem todoItem = todoReference.getCurrentTodoItem();
+                    todoItem.setIsChecked(0);
+                    todoItem.setStatus(Status.REF);
+                    todoItemRepository.save(todoItem);
+                }
+            }
+        }
+
         TodoItem getTodoItem = todoItemRepository.getOne(id);
         getTodoItem.setIsChecked(todoItemDto.getIsChecked());
         getTodoItem.setModDate(LocalDateTime.now());

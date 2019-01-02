@@ -14,6 +14,9 @@ public interface TodoItemReferenceRepository extends JpaRepository<TodoReference
     @Query(value = "SELECT tr FROM TodoReference tr WHERE tr.currentTodoItem.id = :id ORDER BY tr.prevTodoItem.id")
     List<TodoReference> getListByCurrentId(@Param("id") Long id);
 
+    @Query(value = "SELECT tr FROM TodoReference tr WHERE tr.prevTodoItem.id = :id")
+    List<TodoReference> getListByPrevId(@Param("id") Long id);
+
     boolean existsTodoReferencesByCurrentTodoItemId(Long id);
 
     @Modifying

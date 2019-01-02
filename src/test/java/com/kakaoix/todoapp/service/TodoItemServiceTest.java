@@ -34,7 +34,12 @@ public class TodoItemServiceTest {
     }
 
     @Test
-    public void todoItem_삭제() throws Exception{
-        todoItemService.deleteTodoItem(4L);
+    public void todoItem_삭제() throws Exception {
+        todoItemService.deleteTodoItem(1L);
+    }
+
+    @Test
+    public void todoItem_완료() throws Exception {
+        Assert.assertEquals("테스트", todoItemService.checkTodoItem(1L, null));
     }
 }
