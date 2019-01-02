@@ -138,9 +138,10 @@ public class TodoItemService {
             int deleteCount = todoItemReferenceRepository.deletePrevTodoItemsByPrevIdAndCurrentId(todoItemDto.getDeleteIds(), id);
             todoItemReferenceRepository.flush();
 
-            log.info("삭제한 수 : {}", deleteCount);
             // 참조하는 todo가 남아있는지 조회
-            log.info("남아있는 수 : {}", todoItemReferenceRepository.getListByCurrentId(id).size());
+            if (todoItemReferenceRepository.getListByCurrentId(id).size() <= 0) {
+                getTodoItem.setStatus(Status.TODO);
+            }
         }
 
         // 추가할 prevTodo가 있는지 확인

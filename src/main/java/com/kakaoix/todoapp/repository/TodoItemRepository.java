@@ -13,8 +13,6 @@ import java.util.List;
 
 public interface TodoItemRepository extends JpaRepository<TodoItem, Long> {
 
-    List<TodoItem> getTodoItemsByIdIn(List<Long> referenceIds);
-
     @Query(value = "SELECT t FROM TodoItem t WHERE t.id <> :id AND UPPER(t.content) LIKE CONCAT('%', UPPER(:keyword), '%') ORDER BY t.id DESC ")
     List<TodoItem> getTodoItemsByKeywordExceptSelf(@Param("id") Long id,@Param("keyword") String keyword);
 

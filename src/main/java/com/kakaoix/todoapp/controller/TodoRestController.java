@@ -30,18 +30,11 @@ public class TodoRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable) {
-
-        //Page<TodoItem> todoItems = todoService.getTodoList(pageable);
-        /*PageMetadata pageMetadata =
-                new PageMetadata(pageable.getPageSize(), todoItems.getNumber(), todoItems.getTotalElements());
-        PagedResources<TodoItem> resources = new PagedResources<>(todoItems.getContent(), pageMetadata);
-        resources.add(linkTo(methodOn(TodoRestController.class).getTodoList(pageable)).withSelfRel());*/
         return ResponseEntity.ok(todoService.getTodoList(pageable));
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> getTodoItem(@PathVariable("id") Long id) {
-        log.info("modifyId {}: ", id);
         return ResponseEntity.ok(todoService.getModifyTodoItem(id));
     }
 
