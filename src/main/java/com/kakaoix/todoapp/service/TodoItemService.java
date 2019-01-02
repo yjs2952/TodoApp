@@ -65,7 +65,7 @@ public class TodoItemService {
      */
     @Transactional(readOnly = true)
     public List<TodoItem> getSearchTodoList(Long id, String keyword) {
-        List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
+        /*List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
 
         if (prevTodoItems.size() > 0) {
             List<Long> exceptItemIds = new ArrayList<>();
@@ -74,8 +74,8 @@ public class TodoItemService {
             }
             exceptItemIds.add(id);
             return todoItemRepository.getTodoItemsByKeywordExceptSelfAndRefs(exceptItemIds, keyword);
-        }
-        return todoItemRepository.getTodoItemsByKeywordExceptSelf(id, keyword);
+        }*/
+        return todoItemRepository.getTodoItemsByKeyword(id, keyword);
     }
 
     /**

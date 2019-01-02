@@ -54,4 +54,14 @@ public class TodoItemRepositoryTest {
         todoItemRepository.deleteById(6L);
     }
 
+    @Test
+    public void Todo_검색_테스트() {
+        List<TodoItem> searchTodoList = todoItemRepository.getTodoItemsByKeyword(7L, "");
+
+        log.info("-------------- 조회결과 --------------\n");
+        Assert.assertEquals(25, searchTodoList.size());
+        for (TodoItem todoItem : searchTodoList) {
+            log.info("id : {}", todoItem.getId());
+        }
+    }
 }

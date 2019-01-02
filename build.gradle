@@ -31,7 +31,6 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
     compile('org_thymeleaf.extras:thymeleaf-extras-java8time')
     compile('com.h2database:h2')
-    /*compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')*/
     compileOnly('org.projectlombok:lombok')
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation('org.springframework.boot:spring-boot-starter-test')

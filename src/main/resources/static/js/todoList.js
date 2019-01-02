@@ -144,6 +144,8 @@ $('#searchTodoItem').on("keypress", function (e) {
         const id = $(this).parents("div[data-id]").attr('data-id');
         const keyword = $(this).val();
 
+        $('#searchList').html('');
+
         $.ajax({
             url: "/api/prevtodos",
             type: "GET",
