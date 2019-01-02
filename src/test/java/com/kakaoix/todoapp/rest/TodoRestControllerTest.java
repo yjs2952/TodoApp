@@ -39,5 +39,4 @@ public class TodoRestControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-
 }

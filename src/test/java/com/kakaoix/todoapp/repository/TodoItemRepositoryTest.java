@@ -38,12 +38,11 @@ public class TodoItemRepositoryTest {
                 .regDate(LocalDateTime.now())
                 .build());
         todoItem.setStatus(Status.REF);
-        //todoItem.setReferenceItems(todoItems);
         log.info("id : {}", todoItem.getId());
     }
 
     @Test
-    public void Todo_생성_테스트(){
+    public void Todo_생성_테스트() {
         List<TodoItem> todoItems = todoItemRepository.findAll();
         for (TodoItem todoItem : todoItems) {
             log.info(todoItem.getRegDate().toString());
@@ -51,28 +50,8 @@ public class TodoItemRepositoryTest {
     }
 
     @Test
-    public void 체크한_todoItems_조회(){
-        List<Long> ids = Arrays.asList(1L,2L,3L,4L);
-        List<TodoItem> checkedTodos = todoItemRepository.getTodoItemsByIdIn(ids);
-        Assert.assertSame(4, checkedTodos.size());
+    public void Todo_삭제_테스트() {
+        todoItemRepository.deleteById(6L);
     }
 
-    @Test
-    public void 참조_todoItems_조회(){
-        TodoItem todoItem = todoItemRepository.getOne(4L);
-        //List<TodoItem> refTodos = todoItem.getReferenceItems();
-        log.info("상태 :  {}", todoItem.getStatus());
-        //Assert.assertSame(4, refTodos.size());
-    }
-
-    @Test
-    public void 참조_todoItems_삭제(){
-        TodoItem todoItem = todoItemRepository.getOne(4L);
-//        List<TodoItem> refTodos = todoItem.getReferenceItems();
-//        refTodos.remove(todoItemRepository.getOne(1L));
-//        refTodos.remove(todoItemRepository.getOne(2L));
-        //todoItem.setReferenceItems(refTodos);
-
-        //log.info("삭제후 개수 : {}", todoItem.getReferenceItems().size());
-    }
 }
