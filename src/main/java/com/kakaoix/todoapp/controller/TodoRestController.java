@@ -63,7 +63,7 @@ public class TodoRestController {
             if (todoItemDto.getModifyType() == 1) {
                 message = todoService.checkTodoItem(id, todoItemDto);
             } else {
-                todoService.modifyTodoItem(id, todoItemDto);
+                message = todoService.modifyTodoItem(id, todoItemDto);
             }
 
             entity = new ResponseEntity<>(message, HttpStatus.OK);

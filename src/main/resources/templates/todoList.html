@@ -34,7 +34,7 @@
                 </div>
             </div>
         </form>
-        <div class="todo-content">
+        <div id="todo-content" th:data-pno="${todoList.number+1}" class="todo-content">
             <div th:data-tno="${todo.id}" th:each="todo : ${todoList}"
                  class="alert alert-success d-flex flex-row align-items-center">
                 <div class="custom-control custom-checkbox mr-2">
@@ -239,10 +239,10 @@
 
     // todoItem 수정
     $('#modifyButton').on("click", function () {
-        let id = $(this).parents("div[data-id]").attr('data-id');
-        let modifyContent = $('#modifyContent').val();
-        let refTodos = $('input:checkbox[name="refTodo"]:checked');
-        let searchTodos = $('input:checkbox[name="searchTodo"]:checked');
+        const id = $(this).parents("div[data-id]").attr('data-id');
+        const modifyContent = $('#modifyContent').val();
+        const refTodos = $('input:checkbox[name="refTodo"]:checked');
+        const searchTodos = $('input:checkbox[name="searchTodo"]:checked');
 
         if (modifyContent === null || modifyContent === '') {
             alert('Todo item을 입력해 주세요.');
@@ -280,8 +280,11 @@
             data: jsonData,
             contentType: "application/json",
             dataType: "text",
-            success: function () {
-                location.href = '/';
+            success: function (data) {
+                alert(data);
+
+                const page = $('#todo-content').attr('data-pno');
+                location.href = '/?page=' + page;
             },
             error: function (request, status, error) {
                 alert(request.responseText + "\n");
@@ -371,7 +374,9 @@
             dataType: "text",
             success: function (data) {
                 alert(data);
-                location.href = '/';
+
+                const page = $('#todo-content').attr('data-pno');
+                location.href = '/?page=' + page;
             },
             error: function (request, status, error) {
                 alert(request.responseText + "\n");
@@ -387,7 +392,9 @@
             type: "DELETE",
             success: function (data) {
                 alert(data);
-                location.href = '/';
+
+                const page = $('#todo-content').attr('data-pno');
+                location.href = '/?page=' + page;
             },
             error: function (request, status, error) {
                 alert(request.responseText + "\n");
