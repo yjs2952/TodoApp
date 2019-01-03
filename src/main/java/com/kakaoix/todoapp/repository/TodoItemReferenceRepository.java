@@ -25,7 +25,7 @@ public interface TodoItemReferenceRepository extends JpaRepository<TodoReference
     // 자신을 참조하는 TodoItem과의 참조관계 제거
     @Modifying
     @Query(value = "DELETE FROM TodoReference tr WHERE tr.prevTodoItem.id = :currentId")
-    int deletePrevTodoItemsByCurrentId(@Param("currentId") Long currentId);
+    int deleteCurrentTodoItemsByPrevId(@Param("currentId") Long currentId);
 
     // 자신을 참조하는 TodoItem이 있는 지 여부 조회
     boolean existsTodoReferencesByPrevTodoItemId(Long id);

@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
 @Slf4j
 @Service
@@ -164,7 +163,7 @@ public class TodoItemService {
         // 미완료 처리
         getTodoItem.setStatus(Status.TODO);
         if (prevTodoItemList.size() > 0) getTodoItem.setStatus(Status.REF);
-        
+
         return "미완료 처리 되었습니다.";
     }
 
@@ -217,15 +216,31 @@ public class TodoItemService {
     @Transactional
     public void deleteTodoItem(Long id) throws Exception {
 
+        // 참조하는 TodoItem이 있는 경우
         if (todoItemReferenceRepository.existsTodoReferencesByCurrentTodoItemId(id)) {
-            throw new Exception("참조하는 Todo 항목이 있습니다.");
+            // TODO: 2019-01-03 : 참조하고하는 TodoItem 들이 모두 완료인 경우는 어떻게 하지? (자신을 삭제하고 자신이 참조하던 TodoItem 과의 관계 제거)
+
+            throw new Exception("참조하는 TodoItem 항목이 있습니다.");
         }
 
-        // 자신을 참조하는 TodoItem 과의 참조관계 제거
-        if (todoItemReferenceRepository.existsTodoReferencesByPrevTodoItemId(id)) {
-            todoItemReferenceRepository.deletePrevTodoItemsByCurrentId(id);
+        // 자신을 참조하는 TodoItem 이 있는 경우
+        for (TodoReference tr : todoItemReferenceRepository.getListByPrevId(id)) {
+
+            // 완료 상태인 경우 건너뛴다
+            if (tr.getCurrentTodoItem().getStatus().equals(Status.DONE)) continue;
+
+            // 자신을 참조하던 TodoItem 참조할 TodoItem 수가 1개인 경우
+            if (todoItemReferenceRepository.getListByCurrentId(tr.getCurrentTodoItem().getId()).size() == 1) {
+
+                // 참조하는 TodoITem 이 0개 이므로 상태 변경
+                tr.getCurrentTodoItem().setStatus(Status.TODO);
+            }
         }
 
+        // 자기 자신을 참조하는 TodoItem 과의 참조관계 제거
+        todoItemReferenceRepository.deleteCurrentTodoItemsByPrevId(id);
+
+        // TodoItem 삭제
         todoItemRepository.deleteById(id);
     }
 }

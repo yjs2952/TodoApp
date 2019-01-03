@@ -22,7 +22,7 @@ public class TodoRestController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTodoList(@PageableDefault Pageable pageable) {
+    public ResponseEntity<?> getTodoItemList(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(todoService.getTodoList(pageable));
     }
 
@@ -53,7 +53,7 @@ public class TodoRestController {
         try {
             String message = null;
 
-            if (todoItemDto.getModifyType() == 1) {
+            if (todoItemDto.getModifyType() == 1) {     // 완료 여부 체크(1) 인지 수정 버튼 클릭(0)인지
                 message = todoService.checkTodoItem(id, todoItemDto);
             } else {
                 message = todoService.modifyTodoItem(id, todoItemDto);

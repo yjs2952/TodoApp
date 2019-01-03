@@ -35,7 +35,7 @@ public class TodoItemServiceTest {
 
     @Test
     public void todoItem_삭제() throws Exception {
-        todoItemService.deleteTodoItem(1L);
+        todoItemService.deleteTodoItem(22L);
     }
 
     @Test
