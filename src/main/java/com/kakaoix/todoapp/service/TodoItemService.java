@@ -40,8 +40,8 @@ public class TodoItemService {
                 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), Sort.Direction.DESC, "id");
         Page<TodoItem> todoList = todoItemRepository.findAll(pageable);
 
-        // 참조하는 TodoItem의 id값을 json 데이터로 전달하기 위해 List에 담는다.
-        for (TodoItem todoItem : todoList.getContent()) {
+        // 참조하는 TodoItem 의 id 값을 json 데이터로 전달하기 위해 List 에 담는다.
+        for (TodoItem todoItem : todoList.getContent()) {   // TODO: 2019-01-03 : depth 가 많은 거 같은데 어떻게 리팩토링 할까?
             List<TodoReference> prevTodoList = todoItemReferenceRepository.getListByCurrentId(todoItem.getId());
             if (prevTodoList.size() > 0) {
                 List<Long> prevIds = new ArrayList<>();
@@ -51,7 +51,6 @@ public class TodoItemService {
                 todoItem.setPrevTodoIds(prevIds);
             }
         }
-
         return todoList;
     }
 
@@ -87,10 +86,10 @@ public class TodoItemService {
                 .modDate(todoItem.getModDate())
                 .build();
 
-        // 참조하는 TodoItem이 있는지 조회
+        // 참조하는 TodoItem 이 있는지 조회
         List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
 
-        // 참조하는 TodoItem이 있는 경우 해당 TodoItem들의 id값을 TodoItemDto에 전달
+        // 참조하는 TodoItem 이 있는 경우 해당 TodoItem 들의 id 값을 TodoItemDto 에 전달
         if (prevTodoItems.size() > 0) {
             List<Long> prevItemIds = new ArrayList<>();
             for (TodoReference todo : prevTodoItems) {
@@ -131,7 +130,7 @@ public class TodoItemService {
 
         List<TodoReference> prevTodoItemList = todoItemReferenceRepository.getListByCurrentId(id);
 
-        // 참조하는 TodoItem이 있는지 조회
+        // 참조하는 TodoItem 이 있는지 조회
         for (TodoReference prevTodoItem : prevTodoItemList) {
             if (prevTodoItem.getPrevTodoItem().getIsChecked() == 0) {
                 throw new Exception("완료되지 않은 참조 Todo가 있습니다.");
@@ -148,10 +147,10 @@ public class TodoItemService {
             return "완료 처리 되었습니다.";
         }
 
-        // 자신을 참조하면서 완료상태인 Todo가 있는지 확인 (체크 해제할 때만 실행되야함)
+        // 자신을 참조하면서 완료상태인 TodoItem 이 있는지 확인 (체크 해제할 때만 실행되야함)
         for (TodoReference todoReference : todoItemReferenceRepository.getListByPrevId(id)) {
 
-            // 참조하는 TodoItem이 모두 완료상태일 때만 완료할 수 있기 때문에 참조상태로 다시 변경
+            // 참조하는 TodoItem 이 모두 완료상태일 때만 완료할 수 있기 때문에 참조상태로 다시 변경
             if (todoReference.getCurrentTodoItem().getIsChecked() == 1) {
                 TodoItem todoItem = todoReference.getCurrentTodoItem();
                 todoItem.setIsChecked(0);
@@ -162,6 +161,8 @@ public class TodoItemService {
 
         // 미완료 처리
         getTodoItem.setStatus(Status.TODO);
+
+        // 참조하고 있는 TodoItem 이 있는 경우
         if (prevTodoItemList.size() > 0) getTodoItem.setStatus(Status.REF);
 
         return "미완료 처리 되었습니다.";
@@ -179,18 +180,18 @@ public class TodoItemService {
     public String modifyTodoItem(Long id, TodoItemDto todoItemDto) {
         TodoItem getTodoItem = todoItemRepository.getOne(id);
 
-        // 삭제할 prevTodoItem 있는지 확인
+        // 삭제할 prevTodoItem 이 있는지 확인
         if (todoItemDto.getDeleteIds().size() > 0) {
             todoItemReferenceRepository.deletePrevTodoItemsByPrevIdAndCurrentId(todoItemDto.getDeleteIds(), id);
             todoItemReferenceRepository.flush();    // 삭제 후 남은 참조가 있는지 확인하기 위해 DB에 반영 (lazy loading 방지)
 
-            // 참조하는 TodoItem가 남아있는지 조회
+            // 참조하는 TodoItem 이 남아있는지 조회
             if (todoItemReferenceRepository.getListByCurrentId(id).size() <= 0) {
                 getTodoItem.setStatus(Status.TODO);
             }
         }
 
-        // 추가할 prevTodoItem이 있는지 확인
+        // 추가할 prevTodoItem 이 있는지 확인
         if (todoItemDto.getPrevIds().size() > 0) {
             IntStream.rangeClosed(0, todoItemDto.getPrevIds().size() - 1).forEach(index -> {
                         todoItemReferenceRepository.save(TodoReference.builder()
@@ -216,10 +217,8 @@ public class TodoItemService {
     @Transactional
     public void deleteTodoItem(Long id) throws Exception {
 
-        // 참조하는 TodoItem이 있는 경우
+        // 참조하는 TodoItem 이 있는 경우
         if (todoItemReferenceRepository.existsTodoReferencesByCurrentTodoItemId(id)) {
-            // TODO: 2019-01-03 : 참조하고하는 TodoItem 들이 모두 완료인 경우는 어떻게 하지? (자신을 삭제하고 자신이 참조하던 TodoItem 과의 관계 제거)
-
             throw new Exception("참조하는 TodoItem 항목이 있습니다.");
         }
 

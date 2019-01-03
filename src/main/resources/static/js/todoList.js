@@ -1,20 +1,20 @@
 function addTodoItem() {
-    const content = $('#content').val();
+    const content = $('#content');
 
-    if (content === null || content === '') {
+    if (content.val() === null || content.val() === '') {
         alert('Todo item을 입력해 주세요.');
-        $('#content').focus();
+        content.focus();
         return;
     }
 
-    if (content.length > 255) {
+    if (content.val().length > 255) {
         alert('255자를 넘을 수 없습니다.');
-        $('#content').focus();
+        content.focus();
         return;
     }
 
     const jsonData = JSON.stringify({
-        content: content
+        content: content.val()
     });
 
     $.ajax({
@@ -80,22 +80,26 @@ $('#content').on("keypress", function (e) {
     }
 });
 
+$('#addTodo').on("click", function () {
+    addTodoItem();
+});
+
 // todoItem 수정
 $('#modifyButton').on("click", function () {
     const id = $(this).parents("div[data-id]").attr('data-id');
-    const modifyContent = $('#modifyContent').val();
+    const modifyContent = $('#modifyContent');
     const refTodos = $('input:checkbox[name="refTodo"]:checked');
     const searchTodos = $('input:checkbox[name="searchTodo"]:checked');
 
-    if (modifyContent === null || modifyContent === '') {
+    if (modifyContent.val() === null || modifyContent.val() === '') {
         alert('Todo item을 입력해 주세요.');
-        $('#modifyContent').focus();
+        modifyContent.focus();
         return;
     }
 
-    if (modifyContent.length > 255) {
+    if (modifyContent.val().length > 255) {
         alert('255자를 넘을 수 없습니다.');
-        $('#modifyContent').focus();
+        modifyContent.focus();
         return;
     }
 
@@ -112,7 +116,7 @@ $('#modifyButton').on("click", function () {
 
     const jsonData = JSON.stringify({
         id: id,
-        content: modifyContent,
+        content: modifyContent.val(),
         prevIds: insertRefs,
         deleteIds: deleteRefs
     });
@@ -133,10 +137,6 @@ $('#modifyButton').on("click", function () {
             alert(request.responseText + "\n");
         }
     });
-});
-
-$('#addTodo').on("click", function () {
-    addTodoItem();
 });
 
 $('#searchTodoItem').on("keypress", function (e) {
@@ -166,15 +166,12 @@ $('#searchTodoItem').on("keypress", function (e) {
 });
 
 $('.modifyModalButton').on("click", function () {
-    let searchList = $('#searchList');
     let prevTodoItemListDiv = $('#check-list-box');
     let modifyContent = $('#modifyContent');
-    let dateHtml = $('#date');
 
     // 모달창 내부 값 초기화
-    searchList.html('');
+    $('#searchList').html('');
     prevTodoItemListDiv.html('');
-    modifyContent.val('');
 
     const id = $(this).parents("div[data-tno]").attr('data-tno');
     $.ajax({
@@ -185,11 +182,12 @@ $('.modifyModalButton').on("click", function () {
             let modDate = data['modDate'] == null ? '' : `<div>수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}</div>`;
 
             modifyContent.val(data.content);
-            dateHtml.html(`${regDate}${modDate}`);
+            $('#modalLabel').html(`${data.id}  Todo [${data.status}]`);
+            $('#date').html(`${regDate}${modDate}`);
 
             let prevIds = data['prevIds'];
 
-            // 참조된 todo가 있는지 확인
+            // 참조된 TodoItem 이 있는지 확인
             if (prevIds != null && prevIds.length > 0) {
                 prevTodoItemListDiv.html(getPrevTodoItemList(prevIds));
             }
