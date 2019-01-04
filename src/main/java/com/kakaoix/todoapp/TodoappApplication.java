@@ -21,26 +21,5 @@ public class TodoappApplication {
     public static void main(String[] args) {
         SpringApplication.run(TodoappApplication.class, args);
     }
-
-    /*@Bean
-    public CommandLineRunner commandLineRunner(TodoItemRepository todoItemRepository) throws Exception {
-        return (args) -> {
-            List<TodoItem> todoItems = new ArrayList<>();
-            todoItems.add(todoItemRepository.getOne(2L));
-            todoItems.add(todoItemRepository.getOne(3L));
-
-            IntStream.rangeClosed(1, 100).forEach(index -> {
-                        todoItemRepository.save(TodoItem.builder()
-                                .content("테스트" + index)
-                                .isChecked(1)
-                                //.referenceItems(todoItems)
-                                .status(Status.REF)
-                                .regDate(LocalDateTime.now())
-                                .modDate(LocalDateTime.now())
-                                .build());
-                    }
-            );
-        };
-    }*/
 }
 

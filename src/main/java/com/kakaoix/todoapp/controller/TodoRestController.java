@@ -6,9 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RequestMapping("/api/todos")
@@ -16,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class TodoRestController {
 
     private TodoItemService todoService;
+    private final static int ZERO = 0;
 
     public TodoRestController(TodoItemService todoService) {
         this.todoService = todoService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<?> getTodoItemList(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(todoService.getTodoList(pageable));
     }
@@ -32,24 +35,32 @@ public class TodoRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addTodoItem(@RequestBody TodoItemDto todoItemDto) {
+    public ResponseEntity<?> addTodoItem(@Valid @RequestBody TodoItemDto todoItemDto, BindingResult bindingResult) {
 
-        ResponseEntity<?> entity = null;
-        try {
-            todoService.addTodoItem(todoItemDto);
-            entity = new ResponseEntity<>("SUCCESS", HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        // validation 체크
+        if(bindingResult.hasErrors()){
+            String errorMessage = bindingResult.getAllErrors().get(ZERO).getDefaultMessage();
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
         }
 
-        return entity;
+        try {
+            todoService.addTodoItem(todoItemDto);
+            return new ResponseEntity<>("추가 되었습니다.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> modifyTodoItem(@PathVariable("id") Long id, @RequestBody TodoItemDto todoItemDto) {
+    public ResponseEntity<?> modifyTodoItem(@PathVariable("id") Long id, @Valid @RequestBody TodoItemDto todoItemDto, BindingResult bindingResult) {
 
-        ResponseEntity<?> entity = null;
+        // validation 체크
+        if(bindingResult.hasErrors()){
+            String errorMessage = bindingResult.getAllErrors().get(ZERO).getDefaultMessage();
+            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        }
+
         try {
             String message = null;
 
@@ -59,24 +70,21 @@ public class TodoRestController {
                 message = todoService.modifyTodoItem(id, todoItemDto);
             }
 
-            entity = new ResponseEntity<>(message, HttpStatus.OK);
+            return new ResponseEntity<>(message, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return entity;
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBoard(@PathVariable("id") Long id) {
-        ResponseEntity<?> entity = null;
         try {
             todoService.deleteTodoItem(id);
-            entity = new ResponseEntity<>("삭제 되었습니다.", HttpStatus.OK);
+            return new ResponseEntity<>("삭제 되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            entity = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return entity;
     }
 }

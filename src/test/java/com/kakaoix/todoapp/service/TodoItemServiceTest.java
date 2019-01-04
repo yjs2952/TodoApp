@@ -26,7 +26,7 @@ public class TodoItemServiceTest {
     }
 
     @Test
-    public void todoItem_수정() throws Exception {
+    public void todoItem_수정() {
         TodoItemDto todo = todoItemService.getModifyTodoItem(4L);
         todo.setContent("안녕하세요");
 
@@ -39,7 +39,7 @@ public class TodoItemServiceTest {
     }
 
     @Test
-    public void todoItem_완료() throws Exception {
+    public void todoItem_완료여부_체크() throws Exception {
         Assert.assertEquals("테스트", todoItemService.checkTodoItem(1L, null));
     }
 }

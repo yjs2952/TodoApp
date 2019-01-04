@@ -2,7 +2,7 @@ function addTodoItem() {
     const content = $('#content');
 
     if (content.val() === null || content.val() === '') {
-        alert('Todo item을 입력해 주세요.');
+        alert('Todo item 을 입력해 주세요.');
         content.focus();
         return;
     }
@@ -22,7 +22,6 @@ function addTodoItem() {
         type: "POST",
         data: jsonData,
         contentType: "application/json",
-        dataType: "text",
         success: function (data) {
             alert(data);
             location.href = '/';
@@ -92,7 +91,7 @@ $('#modifyButton').on("click", function () {
     const searchTodos = $('input:checkbox[name="searchTodo"]:checked');
 
     if (modifyContent.val() === null || modifyContent.val() === '') {
-        alert('Todo item을 입력해 주세요.');
+        alert('Todo item 을 입력해 주세요.');
         modifyContent.focus();
         return;
     }
@@ -126,7 +125,6 @@ $('#modifyButton').on("click", function () {
         type: "PUT",
         data: jsonData,
         contentType: "application/json",
-        dataType: "text",
         success: function (data) {
             alert(data);
 
@@ -145,7 +143,6 @@ $('#searchTodoItem').on("keypress", function (e) {
         const keyword = $(this).val();
 
         $('#searchList').html('');
-
         $.ajax({
             url: "/api/prevtodos",
             type: "GET",
@@ -182,7 +179,7 @@ $('.modifyModalButton').on("click", function () {
             let modDate = data['modDate'] == null ? '' : `<div>수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}</div>`;
 
             modifyContent.val(data.content);
-            $('#modalLabel').html(`${data.id}  Todo [${data.status}]`);
+            $('#modalLabel').html(`${data.id}  Todo [${data.status === 'TODO' ? '미완료' : (data.status === 'DONE' ? '완료' : '참조')}]`);
             $('#date').html(`${regDate}${modDate}`);
 
             let prevIds = data['prevIds'];
@@ -214,7 +211,6 @@ $('.todoCheck').on("change", function () {
         data: jsonData,
         type: "PUT",
         contentType: "application/json",
-        dataType: "text",
         success: function (data) {
             alert(data);
 

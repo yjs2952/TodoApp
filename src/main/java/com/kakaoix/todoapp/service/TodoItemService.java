@@ -41,7 +41,7 @@ public class TodoItemService {
         Page<TodoItem> todoList = todoItemRepository.findAll(pageable);
 
         // 참조하는 TodoItem 의 id 값을 json 데이터로 전달하기 위해 List 에 담는다.
-        for (TodoItem todoItem : todoList.getContent()) {   // TODO: 2019-01-03 : depth 가 많은 거 같은데 어떻게 리팩토링 할까?
+        for (TodoItem todoItem : todoList.getContent()) {
             List<TodoReference> prevTodoList = todoItemReferenceRepository.getListByCurrentId(todoItem.getId());
             if (prevTodoList.size() > 0) {
                 List<Long> prevIds = new ArrayList<>();
@@ -62,7 +62,11 @@ public class TodoItemService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<TodoItem> getSearchTodoList(Long id, String keyword) {
+    public List<TodoItem> getSearchTodoList(Long id, String keyword) throws Exception{
+        // 자신을 참조하는 TodoItem 이 있는지 조회 (순환 참조 방지용)
+        if (todoItemReferenceRepository.getListByPrevId(id).size() > 0) {
+            throw new Exception("이 TodoItem 을 참조중인 TodoItem 이 있습니다.");
+        }
         return todoItemRepository.getTodoItemsByKeyword(id, keyword);
     }
 

@@ -1,8 +1,14 @@
 spring:
-  profiles:
-    active: local
   thymeleaf:
     cache: false
+  http:
+    encoding:
+      charset: UTF-8
+  devtools:
+    livereload:
+      enabled: true
+  profiles:
+    active: local
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
@@ -16,22 +22,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  http:
-    encoding:
-      charset: UTF-8
-  data:
-    rest:
-      base-path: /api
-      default-page-size: 10
-      max-page-size: 10
-  devtools:
-    livereload:
-      enabled: true
-#logging:
- # level:
-  #  org:
-   #   hibernate:
-    #    type: trace
+
 
 
 
