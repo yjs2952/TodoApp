@@ -38,7 +38,7 @@ public class TodoRestController {
     public ResponseEntity<?> addTodoItem(@Valid @RequestBody TodoItemDto todoItemDto, BindingResult bindingResult) {
 
         // validation 체크
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getAllErrors().get(ZERO).getDefaultMessage();
             return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
         }
@@ -55,22 +55,18 @@ public class TodoRestController {
     @PutMapping("/{id}")
     public ResponseEntity<?> modifyTodoItem(@PathVariable("id") Long id, @Valid @RequestBody TodoItemDto todoItemDto, BindingResult bindingResult) {
 
-        // validation 체크
-        if(bindingResult.hasErrors()){
-            String errorMessage = bindingResult.getAllErrors().get(ZERO).getDefaultMessage();
-            return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-        }
-
         try {
-            String message = null;
-
             if (todoItemDto.getModifyType() == 1) {     // 완료 여부 체크(1) 인지 수정 버튼 클릭(0)인지
-                message = todoService.checkTodoItem(id, todoItemDto);
-            } else {
-                message = todoService.modifyTodoItem(id, todoItemDto);
+                return new ResponseEntity<>(todoService.checkTodoItem(id, todoItemDto), HttpStatus.OK);
             }
 
-            return new ResponseEntity<>(message, HttpStatus.OK);
+            // validation 체크
+            if (bindingResult.hasErrors()) {
+                String errorMessage = bindingResult.getAllErrors().get(ZERO).getDefaultMessage();
+                return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(todoService.modifyTodoItem(id, todoItemDto), HttpStatus.OK);
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

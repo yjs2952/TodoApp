@@ -154,12 +154,11 @@ public class TodoItemService {
         // 자신을 참조하면서 완료상태인 TodoItem 이 있는지 확인 (체크 해제할 때만 실행되야함)
         for (TodoReference todoReference : todoItemReferenceRepository.getListByPrevId(id)) {
 
-            // 참조하는 TodoItem 이 모두 완료상태일 때만 완료할 수 있기 때문에 참조상태로 다시 변경
+            // 참조하는 TodoItem 이 모두 완료상태일 때만 완료할 수 있기 때문에 자신을 참조하는 TodoItem 을 참조상태로 다시 변경
             if (todoReference.getCurrentTodoItem().getIsChecked() == 1) {
                 TodoItem todoItem = todoReference.getCurrentTodoItem();
                 todoItem.setIsChecked(0);
                 todoItem.setStatus(Status.REF);
-                todoItemRepository.save(todoItem);
             }
         }
 

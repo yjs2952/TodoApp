@@ -8,11 +8,11 @@ INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('뷰 스�
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('앵무새 모이 주기', 0, 'TODO', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('안드로이드 스터디', 1, 'DONE', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('회비 등록하기', 0, 'TODO', now());
-INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('강아지 산책 시키기', 1, 'DONE', now());
-INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('햄스터 먹이주기', 0, 'TODO', now());
+INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('강아지 산책 시키기', 0, 'TODO', now());
+INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('햄스터 먹이주기', 1, 'DONE', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('운동하기', 1, 'DONE', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('방 청소하기', 0, 'TODO', now());
-INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('설거지 하기', 1, 'DONE', now());
+INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('설거지 하기', 0, 'REF', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('노트북 사기', 0, 'TODO', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('유럽 여행', 1, 'DONE', now());
 INSERT INTO todo_item (content, is_checked, status, reg_date) VALUES ('동남아 여행', 0, 'TODO', now());
