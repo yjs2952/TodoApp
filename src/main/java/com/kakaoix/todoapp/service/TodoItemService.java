@@ -186,7 +186,7 @@ public class TodoItemService {
         // 삭제할 prevTodoItem 이 있는지 확인
         if (todoItemDto.getDeleteIds().size() > 0) {
             todoItemReferenceRepository.deletePrevTodoItemsByPrevIdAndCurrentId(todoItemDto.getDeleteIds(), id);
-            todoItemReferenceRepository.flush();    // 삭제 후 남은 참조가 있는지 확인하기 위해 DB에 반영 (lazy loading 방지)
+            todoItemReferenceRepository.flush();    // 삭제 후 남은 참조가 있는지 확인하기 위해 DB에 반영
 
             // 참조하는 TodoItem 이 남아있는지 조회
             if (todoItemReferenceRepository.getListByCurrentId(id).size() <= 0) {
