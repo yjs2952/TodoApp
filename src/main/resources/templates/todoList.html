@@ -32,15 +32,13 @@
                 </div>
             </div>
         </form>
-        <div id="todo-content" data-pno="" class="todo-content">
-        </div>
-        <!--<div id="todo-content" th:data-pno="${todoList.number+1}" class="todo-content">
+        <div id="todo-content" th:data-pno="${todoList.number+1}" class="todo-content">
             <div th:data-tno="${todo.id}" th:each="todo : ${todoList}"
                  class="alert alert-success d-flex flex-row align-items-center">
                 <div class="custom-control custom-checkbox mr-2">
                     <input type="checkbox" class="todoCheck custom-control-input"
                            th:id="check + (${todo.id})"
-                           th:checked="${todo.isChecked == 1 ? true : false}">&lt;!&ndash;th:onchange="aa"&ndash;&gt;
+                           th:checked="${todo.isChecked == 1 ? true : false}"><!--th:onchange="aa"-->
                     <label class="custom-control-label" th:for="check + (${todo.id})"></label>
                 </div>
                 <div class="mr-3" th:text="${todo.id}"></div>
@@ -61,12 +59,11 @@
                 <button class="modifyModalButton close far fa-edit fa-1x mx-2"></button>
                 <button class="deleteButton close far fa-trash-alt fa-1x"></button>
             </div>
-        </div>-->
+        </div>
     </div>
     <!-- Pagination -->
     <nav aria-label="Page navigation" style="text-align:center;">
-        <ul id="pagination" class="pagination pagination-sm justify-content-center"></ul>
-        <!--<ul class="pagination pagination-sm justify-content-center"
+        <ul class="pagination pagination-sm justify-content-center"
             th:with="startNumber=${T(Math).floor(todoList.number/10)}*10+1, endNumber=(${todoList.totalPages} > ${startNumber} + 9) ? ${startNumber} + 9 : ${todoList.totalPages}">
             <li class="page-item" th:classappend="(${todoList.number} == 0) ? 'disabled' : ''">
                 <a class="page-link" aria-label="Previous" href="?page=1">&laquo;</a>
@@ -90,7 +87,7 @@
             <li class="page-item" th:classappend="(${todoList.number} == ${todoList.totalPages} - 1) ? 'disabled' : ''">
                 <a class="page-link" aria-label="Next" th:href="@{/(page=${todoList.totalPages})}">&raquo;</a>
             </li>
-        </ul>-->
+        </ul>
     </nav>
     <!-- /Pagination -->
 </div>
