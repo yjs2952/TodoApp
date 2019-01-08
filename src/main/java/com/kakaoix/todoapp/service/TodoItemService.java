@@ -64,9 +64,13 @@ public class TodoItemService {
     @Transactional(readOnly = true)
     public List<TodoItem> getSearchTodoList(Long id, String keyword) throws Exception{
         // 자신을 참조하는 TodoItem 이 있는지 조회 (순환 참조 방지용)
-        if (todoItemReferenceRepository.getListByPrevId(id).size() > 0) {
+        if (todoItemReferenceRepository.getListByPrevId(id).size() > 0)
             throw new Exception("이 TodoItem 을 참조중인 TodoItem 이 있습니다.");
-        }
+
+
+        if (todoItemRepository.getOne(id).getIsChecked() == 1)
+            throw new Exception("이미 완료된 TodoItem 입니다. \n참조를 할 수 없습니다.");
+
         return todoItemRepository.getTodoItemsByKeyword(id, keyword);
     }
 

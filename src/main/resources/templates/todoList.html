@@ -59,15 +59,17 @@
                         <label for="modifyContent" class="col-form-label">Todo Item</label>
                         <textarea class="form-control" id="modifyContent"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="searchTodoItem" class="col-form-label">참조할 Todo 조회 (선택 시 참조 추가)</label>
-                        <input type="text" class="form-control" id="searchTodoItem" placeholder="Todo 명을 입력하세요.">
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">조회 결과</label>
-                        <div style="max-height: 200px;overflow: auto;">
-                            <ul id="searchList" class="checked-list-box" style="padding-left: 0px;">
-                            </ul>
+                    <div id="searchTodoItem">
+                        <div class="form-group">
+                            <label for="searchTodoItemContent" class="col-form-label">참조할 Todo 조회 (선택 시 참조 추가)</label>
+                            <input type="text" class="form-control" id="searchTodoItemContent" placeholder="Todo 명을 입력하세요.">
+                        </div>
+                        <div class="form-group">
+                            <label class="col-form-label">조회 결과</label>
+                            <div style="max-height: 200px;overflow: auto;">
+                                <ul id="searchList" class="checked-list-box" style="padding-left: 0px;">
+                                </ul>
+                            </div>
                         </div>
                     </div>
 

@@ -329,7 +329,7 @@ $('#modifyButton').on("click", function () {
     });
 });
 
-$('#searchTodoItem').on("keypress", function (e) {
+$('#searchTodoItemContent').on("keypress", function (e) {
     if (e.keyCode === 13) {
         const id = $(this).parents("div[data-id]").attr('data-id');
         const keyword = $(this).val();
