@@ -32,62 +32,11 @@
                 </div>
             </div>
         </form>
-        <div id="todo-content" th:data-pno="${todoList.number+1}" class="todo-content">
-            <div th:data-tno="${todo.id}" th:each="todo : ${todoList}"
-                 class="alert alert-success d-flex flex-row align-items-center">
-                <div class="custom-control custom-checkbox mr-2">
-                    <input type="checkbox" class="todoCheck custom-control-input"
-                           th:id="check + (${todo.id})"
-                           th:checked="${todo.isChecked == 1 ? true : false}"><!--th:onchange="aa"-->
-                    <label class="custom-control-label" th:for="check + (${todo.id})"></label>
-                </div>
-                <div class="mr-3" th:text="${todo.id}"></div>
-                <div class="todo-text text-center">
-                    <div th:classappend="${todo.isChecked == 1 ? 'checked' : ''}"
-                         th:text="${todo?.content}">
-                    </div>
-                    <div>
-                        <span th:each="id : ${todo.getPrevTodoIds()}" th:text="'@'+${id}" class="mr-2"></span>
-                    </div>
-                </div>
-
-                <div class="mx-5">
-                    <div th:text="'작성일 : ' + ${#temporals.format(todo.regDate, 'yyyy-MM-dd')}"></div>
-                    <div th:text="'수정일 : ' + ${#temporals.format(todo.modDate, 'yyyy-MM-dd')}"
-                         th:if="${todo?.modDate}"></div>
-                </div>
-                <button class="modifyModalButton close far fa-edit fa-1x mx-2"></button>
-                <button class="deleteButton close far fa-trash-alt fa-1x"></button>
-            </div>
-        </div>
+        <div id="todo-content" data-pno="" class="todo-content"></div>
     </div>
     <!-- Pagination -->
     <nav aria-label="Page navigation" style="text-align:center;">
-        <ul class="pagination pagination-sm justify-content-center"
-            th:with="startNumber=${T(Math).floor(todoList.number/10)}*10+1, endNumber=(${todoList.totalPages} > ${startNumber} + 9) ? ${startNumber} + 9 : ${todoList.totalPages}">
-            <li class="page-item" th:classappend="(${todoList.number} == 0) ? 'disabled' : ''">
-                <a class="page-link" aria-label="Previous" href="?page=1">&laquo;</a>
-            </li>
-            <li class="page-item" th:style="${todoList.first} ? 'display:none'">
-                <a class="page-link" th:href="@{/(page=${todoList.number})}">&lsaquo;</a>
-            </li>
-
-            <li th:each="page :${#numbers.sequence(startNumber, endNumber)}" th:class="page-item"
-                th:classappend="(${page} == ${todoList.number}+1) ? 'active' : ''">
-                <a th:href="@{/(page=${page})}">
-                    <span class="page-link" th:text="${page}">
-                        <span class="sr-only">(current)</span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="page-item" th:style="${todoList.last} ? 'display:none'">
-                <a class="page-link" th:href="@{/(page=${todoList.number}+2)}">&rsaquo;</a>
-            </li>
-            <li class="page-item" th:classappend="(${todoList.number} == ${todoList.totalPages} - 1) ? 'disabled' : ''">
-                <a class="page-link" aria-label="Next" th:href="@{/(page=${todoList.totalPages})}">&raquo;</a>
-            </li>
-        </ul>
+        <ul id="pagination" class="pagination pagination-sm justify-content-center"></ul>
     </nav>
     <!-- /Pagination -->
 </div>
