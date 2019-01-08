@@ -8,3 +8,7 @@
     color: #adb5bd;
 }
 
+#todo-content {
+    min-height: 410px;
+    max-height: 500px;
+}

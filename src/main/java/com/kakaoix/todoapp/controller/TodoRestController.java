@@ -25,7 +25,7 @@ public class TodoRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getTodoItemList(@PageableDefault Pageable pageable, Long id, String keyword) {
+    public ResponseEntity<?> getTodoItemList(@PageableDefault(size = 5) Pageable pageable, Long id, String keyword) {
 
         try {
             if (id != null) {
