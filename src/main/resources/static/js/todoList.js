@@ -224,7 +224,6 @@ function showModifyModal(id) {
 
 function checkTodoItem(id) {
     const isChecked = $('#check' + id).prop('checked') === true ? 1 : 0;
-    console.log(isChecked);
     const jsonData = JSON.stringify({
         isChecked: isChecked,
         modifyType: 1   // modifyType (1 : 완료여부 체크박스 선택시, 0 : 수정 버튼 클릭시)
