@@ -1,3 +1,29 @@
+getTodoItemList();
+
+function getTodoItemList(page) {
+    $.ajax({
+        url: "/api/todos",
+        type: "GET",
+        data: {page: page},
+        dataType: "json",
+        success: function (data) {
+            let todoContent = $('#todo-content');
+            todoContent.attr('data-pno', data['number'] + 1);
+
+            let todoItemHtml = ``;
+            for (let i = 0; i < data['content'].length; i++) {
+                todoItemHtml += getTodoItemHtml(data['content'][i]);
+            }
+            todoContent.html(todoItemHtml);
+            $('#pagination').html(getPaginationHtml(data))
+
+        },
+        error: function (request, status, error) {
+            alert(request.responseText + "\n");
+        }
+    });
+}
+
 function addTodoItem() {
     const content = $('#content');
 
@@ -24,7 +50,8 @@ function addTodoItem() {
         contentType: "application/json",
         success: function (data) {
             alert(data);
-            location.href = '/';
+            getTodoItemList();
+            //location.href = '/';
         },
         error: function (request, status, error) {
             alert(request.responseText + "\n");
@@ -116,12 +143,15 @@ function getTodoItemHtml(data) {
 }
 
 //date객체 YYYY-MM-DD 변환함수
+
 function dateToYYYYMMDD(date) {
     if (date == null) return "";
+
     function pad(num) {
         num = num + '';
         return num.length < 2 ? '0' + num : num;
     }
+
     return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
 }
 
@@ -155,6 +185,7 @@ function getPrevTodoItemList(prevIds) {
     }
     return checkListHtml;
 }
+
 
 function showModifyModal(id) {
     let prevTodoItemListDiv = $('#check-list-box');

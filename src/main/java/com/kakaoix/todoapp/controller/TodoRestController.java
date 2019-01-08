@@ -25,8 +25,16 @@ public class TodoRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getTodoItemList(@PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(todoService.getTodoList(pageable));
+    public ResponseEntity<?> getTodoItemList(@PageableDefault Pageable pageable, Long id, String keyword) {
+
+        try {
+            if (id != null) {
+                return ResponseEntity.ok(todoService.getSearchTodoList(id, keyword));
+            }
+            return ResponseEntity.ok(todoService.getTodoList(pageable));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping(value = "/{id}")
