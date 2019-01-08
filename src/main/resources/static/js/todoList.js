@@ -103,6 +103,7 @@ function getPaginationHtml(data) {
 
 function getTodoItemHtml(data) {
 
+    const id = data['id'];
     const prevTodoItem = data['prevTodoIds'];
     const modDate = data['modDate'] === null ? '' : `<div>수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}</div>`;
     const checked = data['isChecked'] === 1 ? 'checked' : '';
@@ -115,14 +116,14 @@ function getTodoItemHtml(data) {
         }
     }
 
-    return `<div data-tno="${data['id']}" class="alert alert-success d-flex flex-row align-items-center">
+    return `<div data-tno="${id}" class="alert alert-success d-flex flex-row align-items-center">
                 <div class="custom-control custom-checkbox mr-2">
                     <input type="checkbox" class="todoCheck custom-control-input"
-                           id="check${data['id']}"
-                           ${checked}>
-                    <label class="custom-control-label" for="check${data['id']}"></label>
+                           id="check${id}"
+                           ${checked} onclick="checkTodoItem(${id})">
+                    <label class="custom-control-label" for="check${id}"></label>
                 </div>
-                <div class="mr-3">${data['id']}</div>
+                <div class="mr-3">${id}</div>
                 <div class="todo-text text-center">
                     <div class="${data['isChecked'] === 1 ? 'checked' : ''}">
                         ${data['content']}
@@ -136,8 +137,8 @@ function getTodoItemHtml(data) {
                     <div>작성일 : ${dateToYYYYMMDD(new Date(data['regDate']))}</div>
                     ${modDate}
                 </div>
-                <button class="modifyModalButton close far fa-edit fa-1x mx-2"></button>
-                <button class="deleteButton close far fa-trash-alt fa-1x"></button>
+                <button class="close far fa-edit fa-1x mx-2" onclick="showModifyModal(${data['id']})"></button>
+                <button class="close far fa-trash-alt fa-1x" onclick="deleteTodoItem(${data['id']})"></button>
             </div>`;
 }
 
@@ -185,177 +186,172 @@ function getPrevTodoItemList(prevIds) {
     return checkListHtml;
 }
 
-$(function(){
-    $('#content').on("keypress", function (e) {
-        if (e.keyCode === 13) {
-            addTodoItem();
+
+function showModifyModal(id) {
+    let prevTodoItemListDiv = $('#check-list-box');
+    let modifyContent = $('#modifyContent');
+
+    // 모달창 내부 값 초기화
+    $('#searchList').html('');
+    prevTodoItemListDiv.html('');
+
+    $.ajax({
+        url: "/api/todos/" + id,
+        type: "GET",
+        success: function (data) {
+            let regDate = `<div>작성일 : ${dateToYYYYMMDD(new Date(data['regDate']))}</div>`;
+            let modDate = data['modDate'] == null ? '' : `<div>수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}</div>`;
+
+            modifyContent.val(data.content);
+            $('#modalLabel').html(`${data.id}  Todo [${data.status === 'TODO' ? '미완료' : (data.status === 'DONE' ? '완료' : '참조')}]`);
+            $('#date').html(`${regDate}${modDate}`);
+
+            let prevIds = data['prevIds'];
+
+            // 참조된 TodoItem 이 있는지 확인
+            if (prevIds != null && prevIds.length > 0) {
+                prevTodoItemListDiv.html(getPrevTodoItemList(prevIds));
+            }
+            let modifyForm = $('#modifyModal');
+            modifyForm.attr('data-id', id);
+            modifyForm.modal('show');
+        },
+        error: function (request, status, error) {
+            alert(request.responseText + "\n");
         }
     });
+}
 
-    $('#addTodo').on("click", function () {
-        addTodoItem();
+function checkTodoItem(id) {
+    const isChecked = $('#check' + id).prop('checked') === true ? 1 : 0;
+    console.log(isChecked);
+    const jsonData = JSON.stringify({
+        isChecked: isChecked,
+        modifyType: 1   // modifyType (1 : 완료여부 체크박스 선택시, 0 : 수정 버튼 클릭시)
     });
+
+    $.ajax({
+        url: "/api/todos/" + id,
+        data: jsonData,
+        type: "PUT",
+        contentType: "application/json",
+        success: function (data) {
+            alert(data);
+
+            const page = $('#todo-content').attr('data-pno');
+            getTodoItemList(page);
+        },
+        error: function (request, status, error) {
+            alert(request.responseText + "\n");
+            $(`input:checkbox[id="check${id}"]`).prop('checked', false);
+        }
+    })
+}
+
+function deleteTodoItem(id) {
+    $.ajax({
+        url: "/api/todos/" + id,
+        type: "DELETE",
+        success: function (data) {
+            alert(data);
+
+            const page = $('#todo-content').attr('data-pno');
+            getTodoItemList(page);
+        },
+        error: function (request, status, error) {
+            alert(request.responseText + "\n");
+        }
+    })
+}
+
+
+$('#content').on("keypress", function (e) {
+    if (e.keyCode === 13) {
+        addTodoItem();
+    }
+});
+
+$('#addTodo').on("click", function () {
+    addTodoItem();
+});
 
 // todoItem 수정
-    $('#modifyButton').on("click", function () {
+$('#modifyButton').on("click", function () {
+    const id = $(this).parents("div[data-id]").attr('data-id');
+    const modifyContent = $('#modifyContent');
+    const refTodos = $('input:checkbox[name="refTodo"]:checked');
+    const searchTodos = $('input:checkbox[name="searchTodo"]:checked');
+
+    if (modifyContent.val() === null || modifyContent.val() === '') {
+        alert('Todo item 을 입력해 주세요.');
+        modifyContent.focus();
+        return;
+    }
+
+    if (modifyContent.val().length > 255) {
+        alert('255자를 넘을 수 없습니다.');
+        modifyContent.focus();
+        return;
+    }
+
+    let insertRefs = [];
+    let deleteRefs = [];
+
+    searchTodos.each(function () {
+        insertRefs.push($(this).val());
+    });
+
+    refTodos.each(function () {
+        deleteRefs.push($(this).val());
+    });
+
+    const jsonData = JSON.stringify({
+        id: id,
+        content: modifyContent.val(),
+        prevIds: insertRefs,
+        deleteIds: deleteRefs
+    });
+
+    $.ajax({
+        url: "/api/todos/" + id,
+        type: "PUT",
+        data: jsonData,
+        contentType: "application/json",
+        success: function (data) {
+            alert(data);
+            $('#modifyModal').modal('hide');
+
+            const page = $('#todo-content').attr('data-pno');
+            getTodoItemList(page);
+        },
+        error: function (request, status, error) {
+            alert(request.responseText + "\n");
+        }
+    });
+});
+
+$('#searchTodoItem').on("keypress", function (e) {
+    if (e.keyCode === 13) {
         const id = $(this).parents("div[data-id]").attr('data-id');
-        const modifyContent = $('#modifyContent');
-        const refTodos = $('input:checkbox[name="refTodo"]:checked');
-        const searchTodos = $('input:checkbox[name="searchTodo"]:checked');
+        const keyword = $(this).val();
 
-        if (modifyContent.val() === null || modifyContent.val() === '') {
-            alert('Todo item 을 입력해 주세요.');
-            modifyContent.focus();
-            return;
-        }
-
-        if (modifyContent.val().length > 255) {
-            alert('255자를 넘을 수 없습니다.');
-            modifyContent.focus();
-            return;
-        }
-
-        let insertRefs = [];
-        let deleteRefs = [];
-
-        searchTodos.each(function () {
-            insertRefs.push($(this).val());
-        });
-
-        refTodos.each(function () {
-            deleteRefs.push($(this).val());
-        });
-
-        const jsonData = JSON.stringify({
-            id: id,
-            content: modifyContent.val(),
-            prevIds: insertRefs,
-            deleteIds: deleteRefs
-        });
-
-        $.ajax({
-            url: "/api/todos/" + id,
-            type: "PUT",
-            data: jsonData,
-            contentType: "application/json",
-            success: function (data) {
-                alert(data);
-
-                const page = $('#todo-content').attr('data-pno');
-                getTodoItemList(page);
-                //location.href = '/?page=' + page;
-            },
-            error: function (request, status, error) {
-                alert(request.responseText + "\n");
-            }
-        });
-    });
-
-    $('#searchTodoItem').on("keypress", function (e) {
-        if (e.keyCode === 13) {
-            const id = $(this).parents("div[data-id]").attr('data-id');
-            const keyword = $(this).val();
-
-            $('#searchList').html('');
-            $.ajax({
-                url: "/api/todos",
-                type: "GET",
-                data: {
-                    keyword: keyword,
-                    id: id
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data != null && data.length > 0) {
-                        getSearchTodoItems(data);
-                    }
-                },
-                error: function (request, status, error) {
-                    alert(request.responseText + "\n");
-                }
-            });
-        }
-    });
-
-    $('.modifyModalButton').on("click", function () {
-        let prevTodoItemListDiv = $('#check-list-box');
-        let modifyContent = $('#modifyContent');
-
-        // 모달창 내부 값 초기화
         $('#searchList').html('');
-        prevTodoItemListDiv.html('');
-
-        const id = $(this).parents("div[data-tno]").attr('data-tno');
         $.ajax({
-            url: "/api/todos/" + id,
+            url: "/api/todos",
             type: "GET",
+            data: {
+                keyword: keyword,
+                id: id
+            },
+            dataType: "json",
             success: function (data) {
-                let regDate = `<div>작성일 : ${dateToYYYYMMDD(new Date(data['regDate']))}</div>`;
-                let modDate = data['modDate'] == null ? '' : `<div>수정일 : ${dateToYYYYMMDD(new Date(data['modDate']))}</div>`;
-
-                modifyContent.val(data.content);
-                $('#modalLabel').html(`${data.id}  Todo [${data.status === 'TODO' ? '미완료' : (data.status === 'DONE' ? '완료' : '참조')}]`);
-                $('#date').html(`${regDate}${modDate}`);
-
-                let prevIds = data['prevIds'];
-
-                // 참조된 TodoItem 이 있는지 확인
-                if (prevIds != null && prevIds.length > 0) {
-                    prevTodoItemListDiv.html(getPrevTodoItemList(prevIds));
+                if (data != null && data.length > 0) {
+                    getSearchTodoItems(data);
                 }
-                let modifyForm = $('#modifyModal');
-                modifyForm.attr('data-id', id);
-                modifyForm.modal('show');
             },
             error: function (request, status, error) {
                 alert(request.responseText + "\n");
             }
         });
-    });
-
-    $('.todoCheck').on("change", function () {
-        const id = $(this).parents("div[data-tno]").attr('data-tno');
-        const isChecked = $(this).prop('checked') === true ? 1 : 0;
-        const jsonData = JSON.stringify({
-            isChecked: isChecked,
-            modifyType: 1   // modifyType (1 : 완료여부 체크박스 선택시, 0 : 수정 버튼 클릭시)
-        });
-
-        $.ajax({
-            url: "/api/todos/" + id,
-            data: jsonData,
-            type: "PUT",
-            contentType: "application/json",
-            success: function (data) {
-                alert(data);
-
-                const page = $('#todo-content').attr('data-pno');
-                getTodoItemList(page);
-                //location.href = '/?page=' + page;
-            },
-            error: function (request, status, error) {
-                alert(request.responseText + "\n");
-                $(`input:checkbox[id="check${id}"]`).prop('checked', false);
-            }
-        })
-    });
-
-    $('.deleteButton').on("click", function () {
-        const id = $(this).parent().attr('data-tno');
-        $.ajax({
-            url: "/api/todos/" + id,
-            type: "DELETE",
-            success: function (data) {
-                alert(data);
-
-                const page = $('#todo-content').attr('data-pno');
-                getTodoItemList(page);
-                //location.href = '/?page=' + page;
-            },
-            error: function (request, status, error) {
-                alert(request.responseText + "\n");
-            }
-        })
-    });
-
+    }
 });
