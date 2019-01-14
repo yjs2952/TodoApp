@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -42,11 +43,10 @@ public class TodoItemService {
 
         todoList.getContent().stream()
                 .forEach(td -> {
-                    List<Long> prevIds = new ArrayList<>();
-                    todoItemReferenceRepository.getListByCurrentId(td.getId()).stream()
-                            .forEach(tr -> {
-                                prevIds.add(tr.getPrevTodoItem().getId());
-                            });
+                    List<Long> prevIds = todoItemReferenceRepository.getListByCurrentId(
+                            td.getId()).stream()
+                            .map(tr -> tr.getPrevTodoItem().getId())
+                            .collect(Collectors.toList());
                     td.setPrevTodoIds(prevIds);
                 });
         return todoList;
@@ -92,13 +92,11 @@ public class TodoItemService {
                 .modDate(todoItem.getModDate())
                 .build();
 
-        List<Long> prevItemIds = new ArrayList<>();
         // 참조하는 TodoItem 이 있는지 조회
-        todoItemReferenceRepository.getListByCurrentId(id).stream()
+        List<Long> prevItemIds = todoItemReferenceRepository.getListByCurrentId(id).stream()
                 // 참조하는 TodoItem 이 있는 경우 해당 TodoItem 들의 id 값을 TodoItemDto 에 전달
-                .forEach(tr -> {
-                    prevItemIds.add(tr.getPrevTodoItem().getId());
-                });
+                .map(tr -> tr.getPrevTodoItem().getId())
+                .collect(Collectors.toList());
         todoItemDto.setPrevIds(prevItemIds);
 
         return todoItemDto;
