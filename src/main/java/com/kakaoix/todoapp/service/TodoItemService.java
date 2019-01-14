@@ -40,17 +40,15 @@ public class TodoItemService {
                 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), Sort.Direction.DESC, "id");
         Page<TodoItem> todoList = todoItemRepository.findAll(pageable);
 
-        // 참조하는 TodoItem 의 id 값을 json 데이터로 전달하기 위해 List 에 담는다.
-        for (TodoItem todoItem : todoList.getContent()) {
-            List<TodoReference> prevTodoList = todoItemReferenceRepository.getListByCurrentId(todoItem.getId());
-            if (prevTodoList.size() > 0) {
-                List<Long> prevIds = new ArrayList<>();
-                for (TodoReference todoReference : prevTodoList) {
-                    prevIds.add(todoReference.getPrevTodoItem().getId());
-                }
-                todoItem.setPrevTodoIds(prevIds);
-            }
-        }
+        todoList.getContent().stream()
+                .forEach(td -> {
+                    List<Long> prevIds = new ArrayList<>();
+                    todoItemReferenceRepository.getListByCurrentId(td.getId()).stream()
+                            .forEach(tr -> {
+                                prevIds.add(tr.getPrevTodoItem().getId());
+                            });
+                    td.setPrevTodoIds(prevIds);
+                });
         return todoList;
     }
 
@@ -94,17 +92,15 @@ public class TodoItemService {
                 .modDate(todoItem.getModDate())
                 .build();
 
+        List<Long> prevItemIds = new ArrayList<>();
         // 참조하는 TodoItem 이 있는지 조회
-        List<TodoReference> prevTodoItems = todoItemReferenceRepository.getListByCurrentId(id);
+        todoItemReferenceRepository.getListByCurrentId(id).stream()
+                // 참조하는 TodoItem 이 있는 경우 해당 TodoItem 들의 id 값을 TodoItemDto 에 전달
+                .forEach(tr -> {
+                    prevItemIds.add(tr.getPrevTodoItem().getId());
+                });
+        todoItemDto.setPrevIds(prevItemIds);
 
-        // 참조하는 TodoItem 이 있는 경우 해당 TodoItem 들의 id 값을 TodoItemDto 에 전달
-        if (prevTodoItems.size() > 0) {
-            List<Long> prevItemIds = new ArrayList<>();
-            for (TodoReference todo : prevTodoItems) {
-                prevItemIds.add(todo.getPrevTodoItem().getId());
-            }
-            todoItemDto.setPrevIds(prevItemIds);
-        }
         return todoItemDto;
     }
 
@@ -156,15 +152,13 @@ public class TodoItemService {
         }
 
         // 자신을 참조하면서 완료상태인 TodoItem 이 있는지 확인 (체크 해제할 때만 실행되야함)
-        for (TodoReference todoReference : todoItemReferenceRepository.getListByPrevId(id)) {
-
-            // 참조하는 TodoItem 이 모두 완료상태일 때만 완료할 수 있기 때문에 자신을 참조하는 TodoItem 을 참조상태로 다시 변경
-            if (todoReference.getCurrentTodoItem().getIsChecked() == 1) {
-                TodoItem todoItem = todoReference.getCurrentTodoItem();
-                todoItem.setIsChecked(0);
-                todoItem.setStatus(Status.REF);
-            }
-        }
+        todoItemReferenceRepository.getListByPrevId(id).stream()
+                // 참조하는 TodoItem 이 모두 완료상태일 때만 완료할 수 있기 때문에 자신을 참조하는 TodoItem 을 참조상태로 다시 변경
+                .filter(tr -> tr.getCurrentTodoItem().getIsChecked() == 1)
+                .forEach(tr-> {
+                    tr.getCurrentTodoItem().setIsChecked(0);
+                    tr.getCurrentTodoItem().setStatus(Status.REF);
+                });
 
         // 미완료 처리
         getTodoItem.setStatus(Status.TODO);
@@ -230,18 +224,15 @@ public class TodoItemService {
         }
 
         // 자신을 참조하는 TodoItem 이 있는 경우
-        for (TodoReference tr : todoItemReferenceRepository.getListByPrevId(id)) {
-
-            // 완료 상태인 경우 건너뛴다
-            if (tr.getCurrentTodoItem().getStatus().equals(Status.DONE)) continue;
-
-            // 자신을 참조하던 TodoItem 참조할 TodoItem 수가 1개인 경우
-            if (todoItemReferenceRepository.getListByCurrentId(tr.getCurrentTodoItem().getId()).size() == 1) {
-
-                // 참조하는 TodoITem 이 0개 이므로 상태 변경
-                tr.getCurrentTodoItem().setStatus(Status.TODO);
-            }
-        }
+        todoItemReferenceRepository.getListByPrevId(id).stream()
+                // 완료 상태인 경우 건너뛴다
+                .filter(tr -> !tr.getCurrentTodoItem().getStatus().equals(Status.DONE)
+                                && todoItemReferenceRepository.getListByCurrentId(tr.getCurrentTodoItem().getId()).size() == 1)
+                // 자신을 참조하던 TodoItem 참조할 TodoItem 수가 1개인 경우
+                .forEach(tr -> {
+                    // 참조하는 TodoITem 이 0개 이므로 상태 변경
+                    tr.getCurrentTodoItem().setStatus(Status.TODO);
+                });
 
         // 자기 자신을 참조하는 TodoItem 과의 참조관계 제거
         todoItemReferenceRepository.deleteCurrentTodoItemsByPrevId(id);
