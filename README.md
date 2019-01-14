@@ -14,8 +14,6 @@ Spring Boot와 Thymeleaf로 제작한 Todo list 웹 어플리케이션
 - intelliJ에서 lombok plugin 설치
 - Settings -> Build, Execution, Deployment -> Compiler -> Annotation Processors 
   - Enable annotation processing 체크
-- Settings -> Languages & Frameworks
-  -> Javascript language version -> ECMAScript 6 설정
 - 자동 build
 - 프로젝트 실행  
 - localhost:8080 접속
@@ -38,5 +36,5 @@ Spring Boot와 Thymeleaf로 제작한 Todo list 웹 어플리케이션
 - 체크 해제 시 미완료 상태     
 #### 삭제
 - 우측 삭제 아이콘 클릭
-    - 이미 참조중인 TodoItem 이 있다면 삭제할 수 없음
+    - 완료되지 않은 참조중인 TodoItem 이 있다면 삭제할 수 없음
 
