@@ -41,7 +41,7 @@ public class TodoItemService {
                 0 : pageable.getPageNumber() - 1, pageable.getPageSize(), Sort.Direction.DESC, "id");
         Page<TodoItem> todoList = todoItemRepository.findAll(pageable);
 
-        todoList.getContent().stream()
+        todoList.getContent()
                 .forEach(td -> {
                     List<Long> prevIds = todoItemReferenceRepository.getListByCurrentId(td.getId())
                             .stream()
@@ -63,10 +63,10 @@ public class TodoItemService {
     public List<TodoItem> getSearchTodoList(Long id, String keyword) throws Exception{
         // 자신을 참조하는 TodoItem 이 있는지 조회 (순환 참조 방지용)
         if (todoItemReferenceRepository.getListByPrevId(id).size() > 0)
-            throw new Exception("이 TodoItem 을 참조중인 TodoItem 이 있습니다.");
+            throw new RuntimeException("이 TodoItem 을 참조중인 TodoItem 이 있습니다.");
 
         if (todoItemRepository.getOne(id).getIsChecked() == 1)
-            throw new Exception("이미 완료된 TodoItem 입니다. \n참조를 할 수 없습니다.");
+            throw new RuntimeException("이미 완료된 TodoItem 입니다. \n참조를 할 수 없습니다.");
 
         return todoItemRepository.getTodoItemsByKeyword(id, keyword);
     }
@@ -81,7 +81,7 @@ public class TodoItemService {
     public TodoItemDto getModifyTodoItem(Long id) {
         TodoItem todoItem = todoItemRepository.getOne(id);
 
-        // TotoItem 의 값을 TodoItemDto에 전달
+        // TotoItem 의 값을 TodoItemDto 에 전달
         TodoItemDto todoItemDto = TodoItemDto.builder()
                 .id(id)
                 .content(todoItem.getContent())
@@ -92,7 +92,8 @@ public class TodoItemService {
                 .build();
 
         // 참조하는 TodoItem 이 있는지 조회
-        List<Long> prevItemIds = todoItemReferenceRepository.getListByCurrentId(id).stream()
+        List<Long> prevItemIds = todoItemReferenceRepository.getListByCurrentId(id)
+                .stream()
                 // 참조하는 TodoItem 이 있는 경우 해당 TodoItem 들의 id 값을 TodoItemDto 에 전달
                 .map(tr -> tr.getPrevTodoItem().getId())
                 .collect(Collectors.toList());
@@ -134,7 +135,7 @@ public class TodoItemService {
         // 참조하는 TodoItem 이 있는지 조회
         for (TodoReference prevTodoItem : prevTodoItemList) {
             if (prevTodoItem.getPrevTodoItem().getIsChecked() == 0) {
-                throw new Exception("완료되지 않은 참조 Todo가 있습니다.");
+                throw new RuntimeException("완료되지 않은 참조 Todo가 있습니다.");
             }
         }
 
@@ -217,7 +218,7 @@ public class TodoItemService {
 
         // 참조하는 TodoItem 이 있는 경우
         if (todoItemReferenceRepository.existsTodoReferencesByCurrentTodoItemId(id)) {
-            throw new Exception("참조하는 TodoItem 항목이 있습니다.");
+            throw new RuntimeException("참조하는 TodoItem 항목이 있습니다.");
         }
 
         // 자신을 참조하는 TodoItem 이 있는 경우

@@ -18,8 +18,8 @@ function getTodoItemList(page) {
             $('#pagination').html(getPaginationHtml(data))
 
         },
-        error: function (request, status, error) {
-            alert(request.responseText + "\n");
+        error: function (response) {
+            alert(response.responseText + "\n");
         }
     });
 }
@@ -51,10 +51,9 @@ function addTodoItem() {
         success: function (data) {
             alert(data);
             getTodoItemList();
-            //location.href = '/';
         },
-        error: function (request, status, error) {
-            alert(request.responseText + "\n");
+        error: function (response) {
+            alert(response.responseText + "\n");
         }
     });
 }
@@ -65,7 +64,7 @@ function getPaginationHtml(data) {
     let totalPages = data['totalPages'];
     let startPage = Math.floor(currentPage / 10) * 10 + 1;
     let endPage = totalPages > startPage + 9 ? startPage + 9 : totalPages;
-    let isFisrt = data['first'];
+    let isFirst = data['first'];
     let isLast = data['last'];
 
 
@@ -73,7 +72,7 @@ function getPaginationHtml(data) {
         `<li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
                 <div class="page-link" aria-label="Previous" onclick="getTodoItemList(1)">&laquo;</div>
         </li>
-        <li class="page-item" style="${isFisrt ? 'display:none' : ''}">
+        <li class="page-item ${isFirst ? 'disabled' : ''}">
             <div class="page-link" onclick="getTodoItemList(${currentPage})">&lsaquo;</div>
         </li>`;
 
@@ -91,7 +90,7 @@ function getPaginationHtml(data) {
     }
 
     let nextHtml =
-        `<li class="page-item" style="${isLast ? 'display:none' : ''}">
+        `<li class="page-item ${isLast ? 'disabled' : ''}">
                 <div class="page-link" onclick="getTodoItemList(${currentPage}+2)">&rsaquo;</div>
         </li>
         <li class="page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}">
@@ -172,6 +171,7 @@ function getSearchTodoItems(data) {
     $('#searchList').html(searchTodoItems);
 }
 
+// 참조한 TodoItem 목록
 function getPrevTodoItemList(prevIds) {
     let checkListHtml = ``;
     for (let i = 0; i < prevIds.length; i++) {
@@ -186,13 +186,14 @@ function getPrevTodoItemList(prevIds) {
     return checkListHtml;
 }
 
-
+// TodoItem 상세 모달창
 function showModifyModal(id) {
     let prevTodoItemListDiv = $('#check-list-box');
     let modifyContent = $('#modifyContent');
 
     // 모달창 내부 값 초기화
     $('#searchList').html('');
+    $('#searchTodoItemContent').html('');
     prevTodoItemListDiv.html('');
 
     $.ajax({
@@ -212,16 +213,18 @@ function showModifyModal(id) {
             if (prevIds != null && prevIds.length > 0) {
                 prevTodoItemListDiv.html(getPrevTodoItemList(prevIds));
             }
+
             let modifyForm = $('#modifyModal');
             modifyForm.attr('data-id', id);
             modifyForm.modal('show');
         },
-        error: function (request, status, error) {
-            alert(request.responseText + "\n");
+        error: function (response) {
+            alert(response.responseText + "\n");
         }
     });
 }
 
+// TodoITem 완료여부 체크
 function checkTodoItem(id) {
     const isChecked = $('#check' + id).prop('checked') === true ? 1 : 0;
     const jsonData = JSON.stringify({
@@ -240,13 +243,14 @@ function checkTodoItem(id) {
             const page = $('#todo-content').attr('data-pno');
             getTodoItemList(page);
         },
-        error: function (request, status, error) {
-            alert(request.responseText + "\n");
+        error: function (response) {
+            alert(response.responseText + "\n");
             $(`input:checkbox[id="check${id}"]`).prop('checked', false);
         }
     })
 }
 
+// TodoItem 삭제
 function deleteTodoItem(id) {
     $.ajax({
         url: "/api/todos/" + id,
@@ -257,12 +261,11 @@ function deleteTodoItem(id) {
             const page = $('#todo-content').attr('data-pno');
             getTodoItemList(page);
         },
-        error: function (request, status, error) {
-            alert(request.responseText + "\n");
+        error: function (response) {
+            alert(response.responseText + "\n");
         }
     })
 }
-
 
 $('#content').on("keypress", function (e) {
     if (e.keyCode === 13) {
@@ -323,8 +326,8 @@ $('#modifyButton').on("click", function () {
             const page = $('#todo-content').attr('data-pno');
             getTodoItemList(page);
         },
-        error: function (request, status, error) {
-            alert(request.responseText + "\n");
+        error: function (response) {
+            alert(response.responseText + "\n");
         }
     });
 });
@@ -348,8 +351,8 @@ $('#searchTodoItemContent').on("keypress", function (e) {
                     getSearchTodoItems(data);
                 }
             },
-            error: function (request, status, error) {
-                alert(request.responseText + "\n");
+            error: function (response) {
+                alert(response.responseText + "\n");
             }
         });
     }
