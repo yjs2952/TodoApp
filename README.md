@@ -1,6 +1,6 @@
 # TodoApp
 ### 개요
-Spring Boot와 Thymeleaf로 제작한 Todo list 웹 어플리케이션
+Spring Boot와 JPA를 이용한 Todo list 웹 어플리케이션
 
 ### 개발 환경
 - JDK 1.8
